@@ -49,9 +49,9 @@ const catalogs: Record<string, EmployeeCapabilityCatalog> = {
   carlos: {
     summary: "Carlos atua em compras estratégicas, comparando custo total, prazo, qualidade e risco de fornecimento.",
     capabilities: [
-      { key: "quote", title: "Comparar cotações", description: "Normaliza propostas e compara preço, prazo, frete e condição de pagamento.", stage: "planned", actions: ["Ler propostas", "Normalizar itens", "Criar mapa comparativo"] },
-      { key: "supplier", title: "Avaliar fornecedores", description: "Mantém histórico de desempenho e sinaliza riscos antes da compra.", stage: "planned", actions: ["Avaliar atrasos", "Comparar qualidade", "Sinalizar concentração"] },
-      { key: "recommend", title: "Recomendar uma compra", description: "Prepara a melhor combinação de fornecedores com justificativa verificável.", stage: "planned", actions: ["Calcular custo total", "Explicar trade-offs", "Solicitar aprovação"] },
+      { key: "quote", title: "Comparar cotações", description: "Normaliza propostas e compara preço, prazo, frete e condição de pagamento.", stage: "validation", actions: ["Ler propostas", "Normalizar itens", "Criar mapa comparativo"], href: "/compras" },
+      { key: "supplier", title: "Avaliar fornecedores", description: "Mantém histórico de desempenho e sinaliza riscos antes da compra.", stage: "validation", actions: ["Avaliar atrasos", "Comparar qualidade", "Sinalizar concentração"], href: "/compras" },
+      { key: "recommend", title: "Recomendar uma compra", description: "Prepara a melhor combinação de fornecedores com justificativa verificável.", stage: "validation", actions: ["Calcular custo total", "Explicar trade-offs", "Solicitar aprovação"], href: "/compras" },
       { key: "order", title: "Acompanhar pedidos", description: "Monitora confirmação, prazo e entrega dos pedidos aprovados.", stage: "planned", actions: ["Cobrar confirmação", "Alertar atrasos", "Registrar recebimento"] },
     ],
   },

@@ -9,10 +9,12 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { clearLocalMvp, clearLocalSession, hasLocalSession, readLocalAccount, readLocalWorkspace, writeLocalState, writeLocalWorkspace } from "@/features/local/local-workspace";
 import { analyzeLocalReceivables } from "@/features/local/local-finance";
 import { organizeFinancialDocuments } from "@/features/finance/financial-operations";
+import { buildLocalSupplierComparison } from "@/features/procurement/local-procurement";
 import type { ParsedFinancialDocument } from "@/features/finance/document-intelligence";
-import type { Activity, Approval, DemoState, EmployeeStatus, FinancialAccount, FinancialDirection, FinancialDocument, Priority, Task } from "@/types/domain";
+import type { Activity, Approval, DemoState, EmployeeStatus, FinancialAccount, FinancialDirection, FinancialDocument, Priority, ProcurementRequest, Task } from "@/types/domain";
 
 interface DelegateInput { employeeId: string; title: string; description: string; priority: Priority; requiresApproval: boolean }
+interface ProcurementRequestInput { title: string; category: string; quantity: number; budget: number; neededBy: string; project: string; notes: string }
 interface Account { name: string; organization: string; email?: string; role: string }
 interface DemoContextValue extends DemoState {
   account: Account;
@@ -29,6 +31,8 @@ interface DemoContextValue extends DemoState {
   confirmFinancialDocument: (id: string, input: { direction: FinancialDirection; counterparty: string; amount: number; dueDate: string; category: string }) => boolean;
   createFinancialHandoff: (input: { toDepartment: "Comercial" | "Compras" | "Atendimento"; title: string; context: string }) => void;
   setFinancialBudget: (category: string, limit: number) => void;
+  createProcurementRequest: (input: ProcurementRequestInput) => string | null;
+  analyzeProcurementRequest: (id: string) => boolean;
   logoutLocal: () => void;
   resetLocalMvp: () => void;
 }
@@ -103,15 +107,16 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     } else setState((current) => {
       const approval = current.approvals.find((item) => item.id === id); if (!approval) return current;
       const approved = resolution === "aprovada";
-      const title = approved ? "Cobrança simulada autorizada" : resolution === "recusada" ? "Ação recusada" : "Ajuste solicitado";
-      const description = approved ? "A decisão foi registrada. Nenhuma mensagem externa foi enviada neste MVP local." : `O gestor definiu: ${resolution}.`;
+      const isPurchase = Boolean(approval.relatedPurchaseRequestId);
+      const title = approved ? isPurchase ? "Compra aprovada" : "Cobrança simulada autorizada" : resolution === "recusada" ? "Ação recusada" : "Ajuste solicitado";
+      const description = approved ? isPurchase ? "A recomendação do Carlos foi aprovada. O pedido externo continua simulado." : "A decisão foi registrada. Nenhuma mensagem externa foi enviada neste MVP local." : `O gestor definiu: ${resolution}.`;
       const decisionEvents = (approval.relatedAccountIds ?? []).flatMap((accountId) => {
         const financialAccount = current.financialAccounts.find((item) => item.id === accountId);
         if (!financialAccount) return [];
         const assessment = current.financialCollectionEvents.find((item) => item.accountId === accountId && item.eventType === "analysis");
         return [{ id: crypto.randomUUID(), accountId, customerName: financialAccount.customerName, document: financialAccount.document, eventType: approved ? "approval" as const : resolution === "recusada" ? "refusal" as const : "adjustment" as const, title, description, risk: assessment?.risk ?? "baixo" as const, priority: assessment?.priority ?? "baixa" as const, daysOverdue: assessment?.daysOverdue ?? 0, amount: financialAccount.amount, createdAt: new Date().toISOString() }];
       });
-      return { ...current, approvals: current.approvals.map((item) => item.id === id ? { ...item, status: resolution } : item), tasks: current.tasks.map((task) => task.id === approval.taskId ? { ...task, status: approved ? "concluída" : "cancelada", result: description } : task), employees: current.employees.map((employee) => employee.id === approval.employeeId ? { ...employee, status: "disponível", currentTask: approved ? "Cobrança simulada registrada" : "Aguardando nova orientação", tasksCompleted: approved ? employee.tasksCompleted + 1 : employee.tasksCompleted } : employee), activities: [{ id: crypto.randomUUID(), employeeId: approval.employeeId, taskId: approval.taskId, title, description, type: "aprovação", createdAt: "Agora" }, ...current.activities], financialCollectionEvents: [...decisionEvents, ...current.financialCollectionEvents] };
+      return { ...current, approvals: current.approvals.map((item) => item.id === id ? { ...item, status: resolution } : item), tasks: current.tasks.map((task) => task.id === approval.taskId ? { ...task, status: approved ? "concluída" : "cancelada", result: description } : task), employees: current.employees.map((employee) => employee.id === approval.employeeId ? { ...employee, status: "disponível", currentTask: approved ? isPurchase ? "Compra aprovada pelo gestor" : "Cobrança simulada registrada" : "Aguardando nova orientação", tasksCompleted: approved ? employee.tasksCompleted + 1 : employee.tasksCompleted } : employee), activities: [{ id: crypto.randomUUID(), employeeId: approval.employeeId, taskId: approval.taskId, title, description, type: "aprovação", createdAt: "Agora" }, ...current.activities], financialCollectionEvents: [...decisionEvents, ...current.financialCollectionEvents], procurementRequests: current.procurementRequests.map((request) => request.id === approval.relatedPurchaseRequestId ? { ...request, status: approved ? "approved" as const : resolution === "recusada" ? "rejected" as const : "recommended" as const } : request) };
     });
     toast.success(resolution === "aprovada" ? "Ação aprovada" : resolution === "recusada" ? "Ação recusada" : "Ajuste solicitado");
   }, [refreshBackend, state]);
@@ -233,6 +238,31 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     toast.success("Orçamento salvo");
   }, []);
 
+  const createProcurementRequest = useCallback((input: ProcurementRequestInput) => {
+    if (!input.title.trim() || !input.category.trim() || input.quantity <= 0 || input.budget <= 0 || !input.neededBy) return null;
+    const id = crypto.randomUUID();
+    const request: ProcurementRequest = { id, ...input, title: input.title.trim(), category: input.category.trim(), project: input.project.trim() || "Geral", notes: input.notes.trim(), status: "quoting", createdAt: new Date().toISOString() };
+    setState((current) => ({ ...current, procurementRequests: [request, ...current.procurementRequests], employees: current.employees.map((employee) => employee.id === "carlos" ? { ...employee, status: "trabalhando", currentTask: `Cotando ${request.title}` } : employee), activities: [{ id: crypto.randomUUID(), employeeId: "carlos", title: "Nova necessidade de compra", description: `${request.title} entrou para cotação no projeto ${request.project}.`, type: "tarefa", createdAt: "Agora" }, ...current.activities] }));
+    toast.success("Necessidade enviada ao Carlos", { description: "A requisição está pronta para comparação." });
+    return id;
+  }, []);
+
+  const analyzeProcurementRequest = useCallback((id: string) => {
+    let analyzed = false;
+    setState((current) => {
+      const request = current.procurementRequests.find((item) => item.id === id);
+      if (!request || request.status !== "quoting") return current;
+      analyzed = true;
+      const { quotes, recommended } = buildLocalSupplierComparison(request, () => crypto.randomUUID());
+      const taskId = crypto.randomUUID();
+      const task: Task = { id: taskId, employeeId: "carlos", title: `Comparar propostas para ${request.title}`, description: `Normalizar custo, frete, prazo e risco de ${quotes.length} fornecedores.`, priority: "alta", status: "aguardando aprovação", dueAt: "Agora", requiresApproval: true, createdAt: "Agora", result: `${recommended.supplierName} recomendado por melhor equilíbrio entre custo, prazo e risco.` };
+      const approval: Approval = { id: crypto.randomUUID(), taskId, employeeId: "carlos", title: `Comprar ${request.title}`, description: `Carlos recomenda ${recommended.supplierName}: ${recommended.paymentTerms}, entrega em ${recommended.leadTimeDays} dias e risco ${recommended.risk}.`, impact: `Custo total de ${recommended.total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}, ${(request.budget - recommended.total).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} abaixo do orçamento informado.`, risk: recommended.risk, status: "pendente", amount: recommended.total, relatedPurchaseRequestId: request.id, requestedAt: "Agora" };
+      return { ...current, procurementRequests: current.procurementRequests.map((item) => item.id === id ? { ...item, status: "awaiting_approval", recommendedQuoteId: recommended.id } : item), supplierQuotes: [...quotes, ...current.supplierQuotes.filter((quote) => quote.requestId !== id)], tasks: [task, ...current.tasks], approvals: [approval, ...current.approvals], employees: current.employees.map((employee) => employee.id === "carlos" ? { ...employee, status: "aguardando aprovação", currentTask: `Aguardando decisão sobre ${request.title}` } : employee), activities: [{ id: crypto.randomUUID(), employeeId: "carlos", taskId, title: "Comparação concluída", description: `${recommended.supplierName} foi recomendado entre ${quotes.length} propostas.`, type: "aprovação", createdAt: "Agora" }, ...current.activities] };
+    });
+    if (analyzed) toast.success("Carlos concluiu a comparação", { description: "A recomendação foi enviada para Aprovações." });
+    return analyzed;
+  }, []);
+
   const logoutLocal = useCallback(() => {
     clearLocalSession();
     router.replace("/login");
@@ -256,7 +286,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     }
   }, [account, refreshBackend]);
 
-  const value = useMemo(() => ({ ...state, account, backendEnabled: hasBackend, delegateTask, resolveApproval, toggleIntegration, hireEmployee, setEmployeeStatus, updateOrganization, importFinancialAccounts, runAnaAnalysis, processFinancialDocuments, confirmFinancialDocument, createFinancialHandoff, setFinancialBudget, logoutLocal, resetLocalMvp }), [state, account, delegateTask, resolveApproval, toggleIntegration, hireEmployee, setEmployeeStatus, updateOrganization, importFinancialAccounts, runAnaAnalysis, processFinancialDocuments, confirmFinancialDocument, createFinancialHandoff, setFinancialBudget, logoutLocal, resetLocalMvp]);
+  const value = useMemo(() => ({ ...state, account, backendEnabled: hasBackend, delegateTask, resolveApproval, toggleIntegration, hireEmployee, setEmployeeStatus, updateOrganization, importFinancialAccounts, runAnaAnalysis, processFinancialDocuments, confirmFinancialDocument, createFinancialHandoff, setFinancialBudget, createProcurementRequest, analyzeProcurementRequest, logoutLocal, resetLocalMvp }), [state, account, delegateTask, resolveApproval, toggleIntegration, hireEmployee, setEmployeeStatus, updateOrganization, importFinancialAccounts, runAnaAnalysis, processFinancialDocuments, confirmFinancialDocument, createFinancialHandoff, setFinancialBudget, createProcurementRequest, analyzeProcurementRequest, logoutLocal, resetLocalMvp]);
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
 }
 

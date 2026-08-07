@@ -49,6 +49,7 @@ export interface Approval {
   status: "pendente" | "aprovada" | "recusada" | "ajuste solicitado";
   amount?: number;
   relatedAccountIds?: string[];
+  relatedPurchaseRequestId?: string;
   requestedAt: string;
 }
 
@@ -167,6 +168,35 @@ export interface FinancialHandoff {
 
 export interface FinancialBudget { id: string; category: string; limit: number; period: string; }
 
+export type ProcurementRequestStatus = "quoting" | "recommended" | "awaiting_approval" | "approved" | "rejected";
+
+export interface ProcurementRequest {
+  id: string;
+  title: string;
+  category: string;
+  quantity: number;
+  budget: number;
+  neededBy: string;
+  project: string;
+  notes: string;
+  status: ProcurementRequestStatus;
+  recommendedQuoteId?: string;
+  createdAt: string;
+}
+
+export interface SupplierQuote {
+  id: string;
+  requestId: string;
+  supplierName: string;
+  unitPrice: number;
+  shipping: number;
+  total: number;
+  leadTimeDays: number;
+  paymentTerms: string;
+  rating: number;
+  risk: "baixo" | "médio" | "alto";
+}
+
 export interface DemoState {
   employees: Employee[];
   tasks: Task[];
@@ -180,4 +210,6 @@ export interface DemoState {
   anaAuditEvents: AnaAuditEvent[];
   financialHandoffs: FinancialHandoff[];
   financialBudgets: FinancialBudget[];
+  procurementRequests: ProcurementRequest[];
+  supplierQuotes: SupplierQuote[];
 }

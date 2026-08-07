@@ -3,7 +3,7 @@
 import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, BadgeCheck, BookOpen, Building2, ChevronDown, ChevronLeft, ChevronRight, CreditCard, LayoutDashboard, LogOut, Plug, ReceiptText, Repeat2, Settings, ShieldCheck, ShoppingBag, UsersRound } from "lucide-react";
+import { Activity, BadgeCheck, BookOpen, Building2, ChevronDown, ChevronLeft, ChevronRight, CreditCard, LayoutDashboard, LogOut, PackageSearch, Plug, ReceiptText, Repeat2, Settings, ShieldCheck, ShoppingBag, UsersRound } from "lucide-react";
 import { Logo } from "./logo";
 import { useDemo } from "@/features/demo/demo-provider";
 import { logout } from "@/features/auth/actions";
@@ -12,6 +12,7 @@ const navigation = [
   { href: "/central", label: "Central", icon: LayoutDashboard },
   { href: "/equipe", label: "Minha Equipe", icon: UsersRound },
   { href: "/financeiro", label: "Financeiro", icon: ReceiptText },
+  { href: "/compras", label: "Compras", icon: PackageSearch },
   { href: "/delegacoes", label: "Delegações", icon: Building2 },
   { href: "/rotinas", label: "Rotinas", icon: Repeat2 },
   { href: "/aprovacoes", label: "Aprovações", icon: BadgeCheck, approvals: true },
