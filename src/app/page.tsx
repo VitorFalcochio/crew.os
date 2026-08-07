@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/layout/logo";
 import { Avatar } from "@/components/ui/avatar";
+import styles from "./landing-hero.module.css";
 
 const employees = [
   { name: "Ana", initials: "AN", color: "#8b5cf6", department: "Financeiro", description: "Controla o caixa, acompanha vencimentos e prepara cobranças.", icon: BarChart3 },
@@ -39,17 +40,17 @@ export default function Home() {
 
     <section className="landing-hero">
       <div className="landing-hero-grid" aria-hidden="true" />
-      <div className="landing-hero-copy">
+      <div className={`landing-hero-copy ${styles.heroCopy}`}>
         <span className="landing-pill"><i /> A nova força de trabalho digital</span>
         <h1>Sua empresa.<br />Sua equipe <em>digital.</em></h1>
         <p>Contrate funcionários de IA especializados para executar, colaborar e gerar resultados todos os dias.</p>
-        <div className="landing-hero-actions">
+        <div className={`landing-hero-actions ${styles.heroActions}`}>
           <Link href="/cadastro" className="landing-primary-cta">Criar minha equipe <ArrowRight size={16} /></Link>
           <a href="#produto" className="landing-secondary-cta"><Play size={13} fill="currentColor" /> Conhecer a CrewOS</a>
         </div>
       </div>
 
-      <div className="landing-robot-wrap">
+      <div className={`landing-robot-wrap ${styles.robotWrap}`}>
         <div className="landing-robot-glow" />
         <Image src="/crewos-humanoide.png" alt="Funcionário digital humanoide da CrewOS usando uniforme amarelo" width={1024} height={1536} priority sizes="(max-width: 700px) 92vw, 660px" />
       </div>

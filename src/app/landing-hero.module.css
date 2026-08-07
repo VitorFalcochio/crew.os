@@ -1,0 +1,29 @@
+.heroCopy {
+  top: 118px !important;
+}
+
+.heroActions {
+  position: static !important;
+  inset: auto !important;
+  width: max-content !important;
+  margin-top: 24px !important;
+  transform: none !important;
+}
+
+.robotWrap {
+  top: 80px !important;
+}
+
+@media (max-width: 900px) {
+  .heroCopy { top: 105px !important; }
+  .robotWrap { top: 110px !important; }
+}
+
+@media (max-width: 600px) {
+  .heroCopy { top: 84px !important; }
+  .heroActions {
+    width: 100% !important;
+    margin-top: 20px !important;
+  }
+  .robotWrap { top: 150px !important; }
+}
