@@ -119,9 +119,45 @@ button { cursor: pointer; }
 .financial-mvp-summary small { color: var(--muted); font-size: 9px; }
 .financial-mvp-summary strong { font-size: 23px; }
 .financial-mvp-summary p { margin: auto 0 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
+.finance-risk-metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; margin-top: 14px; }
+.finance-risk-metrics article { display: flex; align-items: center; gap: 12px; padding: 16px; }
+.finance-risk-metrics article > span { width: 34px; height: 34px; flex: 0 0 34px; display: grid; place-items: center; border-radius: 9px; background: rgba(245,158,11,.08); color: #fbbf24; }
+.finance-risk-metrics div { display: grid; gap: 4px; }
+.finance-risk-metrics small { color: var(--muted); font-size: 8px; }
+.finance-risk-metrics strong { font-size: 15px; }
+.finance-priority-table { margin-top: 14px; }
+.table-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 20px; border-bottom: 1px solid var(--border); }
+.table-section-heading p { margin: 5px 0 0; color: var(--muted); font-size: 9px; }
+.table-section-heading > span { color: #737982; font-size: 8px; text-transform: uppercase; letter-spacing: .07em; }
+.finance-priority,.finance-risk { display: inline-flex; padding: 5px 7px; border-radius: 999px; font-size: 8px; font-weight: 750; text-transform: uppercase; }
+.finance-priority.urgente,.finance-risk.alto { background: rgba(239,68,68,.1); color: #fca5a5; }
+.finance-priority.alta,.finance-risk.médio { background: rgba(245,158,11,.1); color: #fbbf24; }
+.finance-priority.média { background: rgba(59,130,246,.1); color: #93c5fd; }
+.finance-priority.baixa,.finance-risk.baixo { background: rgba(34,197,94,.1); color: #86efac; }
+.finance-customer-button { display: grid; gap: 3px; padding: 0; border: 0; background: transparent; color: var(--text); text-align: left; }
+.finance-customer-button:hover strong { color: var(--accent-light); }
+.finance-customer-button small { color: var(--muted); font-size: 8px; }
+.finance-reason { max-width: 360px; color: var(--muted); font-size: 8px; line-height: 1.5; }
+.finance-history { margin-top: 14px; overflow: hidden; }
+.finance-history-head { display: flex; align-items: center; gap: 12px; padding: 18px 20px; border-bottom: 1px solid var(--border); }
+.finance-history-head > div:not(.metric-icon) { flex: 1; }
+.finance-history-head p { margin: 4px 0 0; color: var(--muted); font-size: 9px; }
+.finance-history-head .select { width: min(250px,40%); }
+.finance-history-list { display: grid; padding: 4px 20px 16px; }
+.finance-history-list article { display: grid; grid-template-columns: 15px minmax(0,1fr); gap: 10px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.055); }
+.finance-history-list article:last-child { border-bottom: 0; }
+.finance-history-dot { width: 9px; height: 9px; margin-top: 4px; border: 2px solid var(--surface); border-radius: 50%; background: #64748b; box-shadow: 0 0 0 1px #64748b; }
+.finance-history-dot.approval { background: var(--success); box-shadow: 0 0 0 1px var(--success); }
+.finance-history-dot.refusal { background: var(--danger); box-shadow: 0 0 0 1px var(--danger); }
+.finance-history-dot.adjustment { background: var(--warning); box-shadow: 0 0 0 1px var(--warning); }
+.finance-history-list article > div > div { display: flex; justify-content: space-between; gap: 12px; }
+.finance-history-list strong { font-size: 10px; }
+.finance-history-list time,.finance-history-list small { color: #747a83; font-size: 8px; }
+.finance-history-list p { margin: 5px 0; color: var(--muted); font-size: 9px; line-height: 1.5; }
 .user-menu > .logout-button { margin-left: auto; }
 .sidebar.collapsed .user-menu > .logout-button { display: none; }
-@media(max-width:900px){.financial-mvp-grid{grid-template-columns:1fr}}
+@media(max-width:900px){.financial-mvp-grid{grid-template-columns:1fr}.finance-risk-metrics{grid-template-columns:1fr}}
+@media(max-width:600px){.finance-history-head{align-items:flex-start;flex-wrap:wrap}.finance-history-head .select{width:100%}.table-section-heading{align-items:flex-start;flex-direction:column}.finance-risk-metrics article{padding:14px}}
 .icon-button { width: 38px; height: 38px; display: grid; place-items:center; color: var(--muted); border: 1px solid var(--border); background: rgba(255,255,255,.025); border-radius: 10px; }
 .mobile-brand { display:none; }
 .mobile-nav { display:none; }

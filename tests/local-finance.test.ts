@@ -18,5 +18,27 @@ test("Ana classifica somente recebíveis vencidos e não pagos", () => {
 });
 
 test("análise vazia produz resultado verificável sem cobrança", () => {
-  assert.deepEqual(analyzeLocalReceivables([], "2026-08-07"), { analyzed: 0, overdue: [], overdueTotal: 0 });
+  assert.deepEqual(analyzeLocalReceivables([], "2026-08-07"), { analyzed: 0, overdue: [], overdueTotal: 0, assessments: [] });
+});
+
+test("Ana prioriza maior risco usando atraso, valor e exposição do cliente", () => {
+  const result = analyzeLocalReceivables([
+    { id: "high", customerName: "Cliente A", document: "NF-A1", amount: 6000, dueDate: "2026-07-01", status: "overdue", source: "manual", createdAt: "Agora" },
+    { id: "same-customer", customerName: "Cliente A", document: "NF-A2", amount: 5000, dueDate: "2026-08-20", status: "open", source: "manual", createdAt: "Agora" },
+    { id: "low", customerName: "Cliente B", document: "NF-B1", amount: 200, dueDate: "2026-08-05", status: "overdue", source: "manual", createdAt: "Agora" },
+  ], "2026-08-07");
+
+  assert.equal(result.assessments[0].account.id, "high");
+  assert.equal(result.assessments[0].risk, "alto");
+  assert.equal(result.assessments[0].priority, "urgente");
+  assert.equal(result.assessments[0].customerExposure, 11000);
+  assert.equal(result.assessments[1].risk, "baixo");
+});
+
+test("classificação financeira é determinística e explica seus critérios", () => {
+  const first = analyzeLocalReceivables(accounts, "2026-08-07");
+  const second = analyzeLocalReceivables(accounts, "2026-08-07");
+  assert.deepEqual(first.assessments, second.assessments);
+  assert.equal(first.assessments[0].reasons.length, 3);
+  assert.match(first.assessments[0].reasons[0], /dia\(s\) em atraso/);
 });

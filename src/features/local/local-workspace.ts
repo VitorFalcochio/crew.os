@@ -114,6 +114,7 @@ export function createLocalWorkspace(company: LocalCompany, selectedEmployeeIds:
     activities: [{ id: crypto.randomUUID(), title: "Empresa criada no MVP local", description: `${company.name} iniciou um ambiente local de validação. Nenhuma ação externa será executada.`, type: "sistema", createdAt: "Agora" }],
     integrations: integrations.map((integration) => ({ ...integration, connected: false })),
     financialAccounts: [],
+    financialCollectionEvents: [],
   };
   const workspace: LocalWorkspace = {
     version: 1,
@@ -132,7 +133,8 @@ export function readLocalWorkspace(): LocalWorkspace | null {
   try {
     const raw = window.localStorage.getItem(LOCAL_WORKSPACE_KEY);
     const workspace = raw ? JSON.parse(raw) as LocalWorkspace : null;
-    return workspace?.version === 1 ? workspace : null;
+    if (workspace?.version !== 1) return null;
+    return { ...workspace, state: { ...workspace.state, financialAccounts: workspace.state.financialAccounts ?? [], financialCollectionEvents: workspace.state.financialCollectionEvents ?? [] } };
   } catch {
     return null;
   }

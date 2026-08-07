@@ -48,6 +48,7 @@ export interface Approval {
   risk: "baixo" | "médio" | "alto";
   status: "pendente" | "aprovada" | "recusada" | "ajuste solicitado";
   amount?: number;
+  relatedAccountIds?: string[];
   requestedAt: string;
 }
 
@@ -81,6 +82,24 @@ export interface FinancialAccount {
   createdAt: string;
 }
 
+export type FinancialRisk = "baixo" | "médio" | "alto";
+export type CollectionPriority = "baixa" | "média" | "alta" | "urgente";
+
+export interface FinancialCollectionEvent {
+  id: string;
+  accountId: string;
+  customerName: string;
+  document: string;
+  eventType: "analysis" | "approval" | "refusal" | "adjustment";
+  title: string;
+  description: string;
+  risk: FinancialRisk;
+  priority: CollectionPriority;
+  daysOverdue: number;
+  amount: number;
+  createdAt: string;
+}
+
 export interface DemoState {
   employees: Employee[];
   tasks: Task[];
@@ -88,4 +107,5 @@ export interface DemoState {
   activities: Activity[];
   integrations: Integration[];
   financialAccounts: FinancialAccount[];
+  financialCollectionEvents: FinancialCollectionEvent[];
 }

@@ -99,7 +99,13 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       const approved = resolution === "aprovada";
       const title = approved ? "Cobrança simulada autorizada" : resolution === "recusada" ? "Ação recusada" : "Ajuste solicitado";
       const description = approved ? "A decisão foi registrada. Nenhuma mensagem externa foi enviada neste MVP local." : `O gestor definiu: ${resolution}.`;
-      return { ...current, approvals: current.approvals.map((item) => item.id === id ? { ...item, status: resolution } : item), tasks: current.tasks.map((task) => task.id === approval.taskId ? { ...task, status: approved ? "concluída" : "cancelada", result: description } : task), employees: current.employees.map((employee) => employee.id === approval.employeeId ? { ...employee, status: "disponível", currentTask: approved ? "Cobrança simulada registrada" : "Aguardando nova orientação", tasksCompleted: approved ? employee.tasksCompleted + 1 : employee.tasksCompleted } : employee), activities: [{ id: crypto.randomUUID(), employeeId: approval.employeeId, taskId: approval.taskId, title, description, type: "aprovação", createdAt: "Agora" }, ...current.activities] };
+      const decisionEvents = (approval.relatedAccountIds ?? []).flatMap((accountId) => {
+        const financialAccount = current.financialAccounts.find((item) => item.id === accountId);
+        if (!financialAccount) return [];
+        const assessment = current.financialCollectionEvents.find((item) => item.accountId === accountId && item.eventType === "analysis");
+        return [{ id: crypto.randomUUID(), accountId, customerName: financialAccount.customerName, document: financialAccount.document, eventType: approved ? "approval" as const : resolution === "recusada" ? "refusal" as const : "adjustment" as const, title, description, risk: assessment?.risk ?? "baixo" as const, priority: assessment?.priority ?? "baixa" as const, daysOverdue: assessment?.daysOverdue ?? 0, amount: financialAccount.amount, createdAt: new Date().toISOString() }];
+      });
+      return { ...current, approvals: current.approvals.map((item) => item.id === id ? { ...item, status: resolution } : item), tasks: current.tasks.map((task) => task.id === approval.taskId ? { ...task, status: approved ? "concluída" : "cancelada", result: description } : task), employees: current.employees.map((employee) => employee.id === approval.employeeId ? { ...employee, status: "disponível", currentTask: approved ? "Cobrança simulada registrada" : "Aguardando nova orientação", tasksCompleted: approved ? employee.tasksCompleted + 1 : employee.tasksCompleted } : employee), activities: [{ id: crypto.randomUUID(), employeeId: approval.employeeId, taskId: approval.taskId, title, description, type: "aprovação", createdAt: "Agora" }, ...current.activities], financialCollectionEvents: [...decisionEvents, ...current.financialCollectionEvents] };
     });
     toast.success(resolution === "aprovada" ? "Ação aprovada" : resolution === "recusada" ? "Ação recusada" : "Ajuste solicitado");
   }, [refreshBackend, state]);
@@ -156,17 +162,19 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       setState((current) => {
         const today = new Date().toISOString().slice(0, 10);
         const analysis = analyzeLocalReceivables(current.financialAccounts, today);
-        const { overdue, overdueTotal: total, analyzed } = analysis;
+        const { overdue, overdueTotal: total, analyzed, assessments } = analysis;
         const result = `${analyzed} conta(s) analisada(s) · ${overdue.length} vencida(s) · R$ ${total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} em cobrança potencial`;
         const analyzedActivity: Activity = { id: crypto.randomUUID(), employeeId: "ana", taskId, title: "Contas analisadas", description: result, type: "ferramenta", createdAt: "Agora" };
+        const analysisEvents = assessments.map((assessment) => ({ id: crypto.randomUUID(), accountId: assessment.account.id, customerName: assessment.account.customerName, document: assessment.account.document, eventType: "analysis" as const, title: `Risco ${assessment.risk} · prioridade ${assessment.priority}`, description: assessment.reasons.join(" · "), risk: assessment.risk, priority: assessment.priority, daysOverdue: assessment.daysOverdue, amount: assessment.account.amount, createdAt: new Date().toISOString() }));
 
         if (!overdue.length) {
           return { ...current, tasks: current.tasks.map((item) => item.id === taskId ? { ...item, status: "concluída", result } : item), employees: current.employees.map((employee) => employee.id === "ana" ? { ...employee, status: "disponível", currentTask: "Nenhuma cobrança vencida encontrada", tasksCompleted: employee.tasksCompleted + 1 } : employee), activities: [analyzedActivity, ...current.activities] };
         }
 
-        const approval: Approval = { id: crypto.randomUUID(), taskId, employeeId: "ana", title: `Autorizar ${overdue.length} cobrança(s) simulada(s)`, description: `Ana preparou uma cobrança para: ${overdue.map((item) => `${item.customerName} (${item.document})`).join(", ")}.`, impact: `Recuperação potencial de R$ ${total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}. O MVP não fará envio externo.`, risk: total > 500 ? "médio" : "baixo", status: "pendente", amount: total, requestedAt: "Agora" };
+        const approvalRisk = assessments.some((item) => item.risk === "alto") ? "alto" : assessments.some((item) => item.risk === "médio") ? "médio" : "baixo";
+        const approval: Approval = { id: crypto.randomUUID(), taskId, employeeId: "ana", title: `Autorizar ${overdue.length} cobrança(s) simulada(s)`, description: `Ana preparou uma cobrança para: ${overdue.map((item) => `${item.customerName} (${item.document})`).join(", ")}.`, impact: `Recuperação potencial de R$ ${total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}. O MVP não fará envio externo.`, risk: approvalRisk, status: "pendente", amount: total, relatedAccountIds: overdue.map((item) => item.id), requestedAt: "Agora" };
         const approvalActivity: Activity = { id: crypto.randomUUID(), employeeId: "ana", taskId, title: "Cobranças aguardando aprovação", description: `${overdue.length} cobrança(s) simulada(s) precisam da sua decisão.`, type: "aprovação", createdAt: "Agora" };
-        return { ...current, approvals: [approval, ...current.approvals], tasks: current.tasks.map((item) => item.id === taskId ? { ...item, status: "aguardando aprovação", result } : item), employees: current.employees.map((employee) => employee.id === "ana" ? { ...employee, status: "aguardando aprovação", currentTask: "Aguardando decisão sobre cobranças" } : employee), activities: [approvalActivity, analyzedActivity, ...current.activities] };
+        return { ...current, approvals: [approval, ...current.approvals], tasks: current.tasks.map((item) => item.id === taskId ? { ...item, status: "aguardando aprovação", result } : item), employees: current.employees.map((employee) => employee.id === "ana" ? { ...employee, status: "aguardando aprovação", currentTask: "Aguardando decisão sobre cobranças" } : employee), activities: [approvalActivity, analyzedActivity, ...current.activities], financialCollectionEvents: [...analysisEvents, ...current.financialCollectionEvents] };
       });
       toast.success("Análise concluída", { description: "Revise a decisão preparada pela Ana." });
     }, 900);
