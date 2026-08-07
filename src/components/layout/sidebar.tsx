@@ -11,7 +11,7 @@ import { logout } from "@/features/auth/actions";
 const navigation = [
   { href: "/central", label: "Central", icon: LayoutDashboard },
   { href: "/equipe", label: "Minha Equipe", icon: UsersRound },
-  { href: "/financeiro", label: "MVP da Ana", icon: ReceiptText },
+  { href: "/financeiro", label: "Financeiro", icon: ReceiptText },
   { href: "/delegacoes", label: "Delegações", icon: Building2 },
   { href: "/rotinas", label: "Rotinas", icon: Repeat2 },
   { href: "/aprovacoes", label: "Aprovações", icon: BadgeCheck, approvals: true },

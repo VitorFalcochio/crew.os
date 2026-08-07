@@ -6,7 +6,7 @@ import { AnaFinanceWorkspace } from "@/components/finance/ana-finance-workspace"
 
 export default function FinancePage() {
   return <>
-    <PageHeader eyebrow="Financeiro" title="Ana" description="Organize documentos, contas, cobranças e decisões financeiras em um único espaço." />
+    <PageHeader eyebrow="Departamento · Ana" title="Financeiro" description="Organize documentos, contas, cobranças e decisões financeiras com a Ana." />
     <div className="local-simulation-warning"><TestTube2 size={16} /><div><strong>Validação local</strong><p>Dados e decisões ficam neste navegador. Pagamentos, cobranças e envios externos continuam simulados.</p></div></div>
     <AnaFinanceWorkspace />
   </>;

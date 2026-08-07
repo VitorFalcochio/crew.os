@@ -96,7 +96,7 @@ export default function CentralPage() {
       <div className="crew-date"><CalendarDays size={15} /><span><small>Hoje</small>{today}</span></div>
     </header>
 
-    {!backendEnabled && <Link href="/financeiro" className="local-mvp-entry"><span><TestTube2 size={17} /></span><div><strong>Validar o MVP da Ana</strong><small>Cadastre contas a receber, execute a análise e tome uma decisão simulada.</small></div><ArrowRight size={15} /></Link>}
+    {!backendEnabled && <Link href="/financeiro" className="local-mvp-entry"><span><TestTube2 size={17} /></span><div><strong>Abrir Financeiro</strong><small>Organize documentos, acompanhe contas e valide as análises da Ana.</small></div><ArrowRight size={15} /></Link>}
 
     <section className="crew-command-card">
       <div className="crew-command-intro"><span><Sparkles size={16} /></span><div><strong>O que sua equipe deve fazer?</strong><small>Descreva um objetivo. A CrewOS escolhe a pessoa certa e organiza o trabalho.</small></div></div>
