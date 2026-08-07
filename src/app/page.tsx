@@ -43,6 +43,10 @@ export default function Home() {
         <span className="landing-pill"><i /> A nova força de trabalho digital</span>
         <h1>Sua empresa.<br />Sua equipe <em>digital.</em></h1>
         <p>Contrate funcionários de IA especializados para executar, colaborar e gerar resultados todos os dias.</p>
+        <div className="landing-hero-actions">
+          <Link href="/cadastro" className="landing-primary-cta">Criar minha equipe <ArrowRight size={16} /></Link>
+          <a href="#produto" className="landing-secondary-cta"><Play size={13} fill="currentColor" /> Conhecer a CrewOS</a>
+        </div>
       </div>
 
       <div className="landing-robot-wrap">
@@ -53,10 +57,6 @@ export default function Home() {
       <div className="landing-float-card landing-float-left"><span><Network size={15} /></span><div><strong>5 funcionários</strong><small>trabalhando agora</small></div><i /></div>
       <div className="landing-float-card landing-float-right"><span><Clock3 size={15} /></span><div><strong>Operação 24/7</strong><small>sem perder contexto</small></div></div>
 
-      <div className="landing-hero-actions">
-        <Link href="/cadastro" className="landing-primary-cta">Criar minha equipe <ArrowRight size={16} /></Link>
-        <a href="#produto" className="landing-secondary-cta"><Play size={13} fill="currentColor" /> Conhecer a CrewOS</a>
-      </div>
       <div className="landing-scroll"><span>Descubra</span><i /></div>
     </section>
 
