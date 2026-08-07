@@ -11,7 +11,9 @@ test("Ana separa capacidades em validação das capacidades planejadas", () => {
   const catalog = getEmployeeCapabilities(employee("ana", "Ana", "Financeiro"));
 
   assert.ok(catalog.capabilities.some((item) => item.key === "receivables" && item.stage === "validation" && item.href === "/financeiro"));
-  assert.ok(catalog.capabilities.some((item) => item.key === "cash-flow" && item.stage === "planned"));
+  assert.ok(catalog.capabilities.some((item) => item.key === "cash-flow" && item.stage === "validation"));
+  assert.ok(catalog.capabilities.some((item) => item.key === "gmail" && item.stage === "planned"));
+  assert.equal(catalog.capabilities.length, 24);
 });
 
 test("cada especialidade conhecida possui um catálogo útil e sem chaves duplicadas", () => {
@@ -21,4 +23,3 @@ test("cada especialidade conhecida possui um catálogo útil e sem chaves duplic
     assert.equal(new Set(capabilities.map((item) => item.key)).size, capabilities.length);
   }
 });
-

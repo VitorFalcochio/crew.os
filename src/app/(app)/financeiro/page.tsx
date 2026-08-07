@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { StatusPill } from "@/components/ui/status-pill";
 import { useDemo } from "@/features/demo/demo-provider";
 import { currency } from "@/lib/utils";
+import { AnaFinanceWorkspace } from "@/components/finance/ana-finance-workspace";
 
 function dateFromToday(days: number) {
   const date = new Date();
@@ -47,6 +48,8 @@ export default function FinancePage() {
 
   return <><PageHeader eyebrow="MVP Financeiro" title="Laboratório da Ana" description="Adicione recebíveis, peça uma análise e valide o ciclo de decisão. Tudo permanece neste navegador e nenhum cliente receberá mensagens." action={<Button onClick={runAnaAnalysis} disabled={backendEnabled || anaBusy || financialAccounts.length === 0}><Play size={14} />{anaBusy ? "Análise em andamento" : "Ana, analisar agora"}</Button>} />
     <div className="local-simulation-warning"><TestTube2 size={16} /><div><strong>Ambiente de validação local</strong><p>As contas e decisões abaixo são persistidas no localStorage. A etapa de envio é sempre simulada.</p></div></div>
+    <AnaFinanceWorkspace />
+    <div className="section-title"><h2>Laboratório de cobranças</h2></div>
     <section className="financial-mvp-grid">
       <form className="card card-pad" onSubmit={submit}>
         <div className="settings-section-head"><span className="metric-icon"><Plus size={15} /></span><div><h2>Adicionar conta a receber</h2><p className="subtitle">Cadastre manualmente ou use uma massa de teste.</p></div></div>

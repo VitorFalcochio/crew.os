@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --conditions=react-server --import tsx --test tests/orchestration.test.mjs tests/providers.test.ts tests/brains.test.ts tests/crew-intelligence.test.ts tests/deployment-mode.test.ts tests/local-finance.test.ts tests/capabilities.test.ts"
+    "test": "node --conditions=react-server --import tsx --test tests/orchestration.test.mjs tests/providers.test.ts tests/brains.test.ts tests/crew-intelligence.test.ts tests/deployment-mode.test.ts tests/local-finance.test.ts tests/capabilities.test.ts tests/financial-operations.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -19,12 +19,14 @@
     "framer-motion": "^12.23.12",
     "lucide-react": "^0.468.0",
     "next": "16.3.0",
+    "pdfjs-dist": "^5.4.624",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-hook-form": "^7.62.0",
     "server-only": "0.0.1",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
+    "tesseract.js": "^7.0.0",
     "zod": "^4.1.5"
   },
   "devDependencies": {
@@ -38,5 +40,8 @@
     "tsx": "4.23.9",
     "typescript": "^5.9.2"
   },
-  "overrides": { "nanoid": "3.3.11", "js-yaml": "4.1.0" }
+  "overrides": {
+    "nanoid": "3.3.11",
+    "js-yaml": "4.1.0"
+  }
 }

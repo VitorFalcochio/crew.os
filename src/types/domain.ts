@@ -100,6 +100,73 @@ export interface FinancialCollectionEvent {
   createdAt: string;
 }
 
+export type FinancialDocumentType = "invoice" | "boleto" | "receipt" | "payment_proof" | "statement" | "other";
+export type FinancialDirection = "payable" | "receivable" | "neutral";
+
+export interface FinancialDocument {
+  id: string;
+  fileName: string;
+  mimeType: string;
+  size: number;
+  hash: string;
+  type: FinancialDocumentType;
+  direction: FinancialDirection;
+  status: "processed" | "review" | "duplicate" | "unidentified" | "error";
+  confidence: number;
+  counterparty?: string;
+  taxId?: string;
+  documentNumber?: string;
+  amount?: number;
+  dueDate?: string;
+  issueDate?: string;
+  barcode?: string;
+  category: string;
+  project?: string;
+  costCenter?: string;
+  duplicateOf?: string;
+  relatedDocumentIds: string[];
+  notes: string[];
+  textExcerpt?: string;
+  createdAt: string;
+}
+
+export interface FinancialEntry {
+  id: string;
+  direction: "payable" | "receivable";
+  counterparty: string;
+  description: string;
+  amount: number;
+  paidAmount: number;
+  dueDate: string;
+  status: "open" | "partial" | "paid" | "overdue";
+  category: string;
+  project?: string;
+  costCenter?: string;
+  sourceDocumentIds: string[];
+  createdAt: string;
+}
+
+export interface AnaAuditEvent {
+  id: string;
+  action: string;
+  reason: string;
+  dataUsed: string[];
+  autonomy: "observar" | "aprovar" | "executar";
+  createdAt: string;
+}
+
+export interface FinancialHandoff {
+  id: string;
+  fromEmployeeId: "ana";
+  toDepartment: "Comercial" | "Compras" | "Atendimento";
+  title: string;
+  context: string;
+  status: "suggested" | "created" | "resolved";
+  createdAt: string;
+}
+
+export interface FinancialBudget { id: string; category: string; limit: number; period: string; }
+
 export interface DemoState {
   employees: Employee[];
   tasks: Task[];
@@ -108,4 +175,9 @@ export interface DemoState {
   integrations: Integration[];
   financialAccounts: FinancialAccount[];
   financialCollectionEvents: FinancialCollectionEvent[];
+  financialDocuments: FinancialDocument[];
+  financialEntries: FinancialEntry[];
+  anaAuditEvents: AnaAuditEvent[];
+  financialHandoffs: FinancialHandoff[];
+  financialBudgets: FinancialBudget[];
 }

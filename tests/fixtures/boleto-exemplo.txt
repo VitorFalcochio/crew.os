@@ -1,0 +1,6 @@
+BOLETO
+Fornecedor: Materiais Alfa
+CNPJ 12.345.678/0001-90
+Valor do documento R$ 4.850,00
+Vencimento 20/08/2026
+Linha digitável 12345678901234567890123456789012345678901234

@@ -8,7 +8,9 @@ import { adaptBootstrap, type BootstrapPayload } from "./services/backend-adapte
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { clearLocalMvp, clearLocalSession, hasLocalSession, readLocalAccount, readLocalWorkspace, writeLocalState, writeLocalWorkspace } from "@/features/local/local-workspace";
 import { analyzeLocalReceivables } from "@/features/local/local-finance";
-import type { Activity, Approval, DemoState, EmployeeStatus, FinancialAccount, Priority, Task } from "@/types/domain";
+import { organizeFinancialDocuments } from "@/features/finance/financial-operations";
+import type { ParsedFinancialDocument } from "@/features/finance/document-intelligence";
+import type { Activity, Approval, DemoState, EmployeeStatus, FinancialAccount, FinancialDirection, FinancialDocument, Priority, Task } from "@/types/domain";
 
 interface DelegateInput { employeeId: string; title: string; description: string; priority: Priority; requiresApproval: boolean }
 interface Account { name: string; organization: string; email?: string; role: string }
@@ -23,6 +25,10 @@ interface DemoContextValue extends DemoState {
   updateOrganization: (input: { name: string; industry: string }) => Promise<void>;
   importFinancialAccounts: (accounts: Array<Omit<FinancialAccount, "id" | "createdAt">>) => number;
   runAnaAnalysis: () => boolean;
+  processFinancialDocuments: (files: File[]) => Promise<{ processed: number; duplicates: number; reviews: number }>;
+  confirmFinancialDocument: (id: string, input: { direction: FinancialDirection; counterparty: string; amount: number; dueDate: string; category: string }) => boolean;
+  createFinancialHandoff: (input: { toDepartment: "Comercial" | "Compras" | "Atendimento"; title: string; context: string }) => void;
+  setFinancialBudget: (category: string, limit: number) => void;
   logoutLocal: () => void;
   resetLocalMvp: () => void;
 }
@@ -181,6 +187,52 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     return true;
   }, [state]);
 
+  const processFinancialDocuments = useCallback(async (files: File[]) => {
+    if (hasBackend) throw new Error("O upload local está disponível apenas no MVP sem Supabase");
+    const formData = new FormData();
+    files.forEach((file) => formData.append("files", file));
+    const response = await fetch("/api/financial/documents", { method: "POST", body: formData });
+    const payload = await response.json() as { documents?: ParsedFinancialDocument[]; error?: string };
+    if (!response.ok || !payload.documents) throw new Error(payload.error ?? "Não foi possível processar os documentos");
+    let summary = { processed: 0, duplicates: 0, reviews: 0 };
+    setState((current) => {
+      const organized = organizeFinancialDocuments({ parsed: payload.documents!, documents: current.financialDocuments, entries: current.financialEntries, now: new Date().toISOString(), createId: () => crypto.randomUUID() });
+      summary = { processed: organized.createdDocuments.filter((document) => document.status === "processed").length, duplicates: organized.duplicates, reviews: organized.reviews };
+      return { ...current, financialDocuments: organized.documents, financialEntries: organized.entries, anaAuditEvents: [organized.audit, ...current.anaAuditEvents], activities: [{ id: crypto.randomUUID(), employeeId: "ana", title: "Documentos financeiros organizados", description: `${payload.documents!.length} arquivo(s): ${summary.processed} processado(s), ${summary.duplicates} duplicidade(s) e ${summary.reviews} para revisão.`, type: "ferramenta", createdAt: "Agora" }, ...current.activities] };
+    });
+    toast.success("Ana terminou de organizar os documentos", { description: `${files.length} arquivo(s) analisado(s) sem armazenamento dos arquivos originais.` });
+    return summary;
+  }, []);
+
+  const confirmFinancialDocument = useCallback((id: string, input: { direction: FinancialDirection; counterparty: string; amount: number; dueDate: string; category: string }) => {
+    if (input.direction === "neutral" || !input.counterparty.trim() || input.amount <= 0 || !input.dueDate) return false;
+    let confirmed = false;
+    setState((current) => {
+      const document = current.financialDocuments.find((item) => item.id === id);
+      if (!document || document.status === "duplicate") return current;
+      confirmed = true;
+      const exists = current.financialEntries.some((entry) => entry.sourceDocumentIds.includes(id));
+      const updatedDocument: FinancialDocument = { ...document, ...input, counterparty: input.counterparty.trim(), status: "processed", confidence: 1, notes: [] };
+      const direction = input.direction === "payable" ? "payable" as const : "receivable" as const;
+      const entry = exists ? null : { id: crypto.randomUUID(), direction, counterparty: input.counterparty.trim(), description: `${document.type === "invoice" ? "Nota fiscal" : document.type === "boleto" ? "Boleto" : "Documento"}${document.documentNumber ? ` ${document.documentNumber}` : ""}`, amount: input.amount, paidAmount: 0, dueDate: input.dueDate, status: input.dueDate < new Date().toISOString().slice(0, 10) ? "overdue" as const : "open" as const, category: input.category, sourceDocumentIds: [id], createdAt: new Date().toISOString() };
+      return { ...current, financialDocuments: current.financialDocuments.map((item) => item.id === id ? updatedDocument : item), financialEntries: entry ? [entry, ...current.financialEntries] : current.financialEntries, anaAuditEvents: [{ id: crypto.randomUUID(), action: "Documento confirmado pelo gestor", reason: `${document.fileName} foi revisado e liberado para a operação financeira.`, dataUsed: [document.fileName, input.counterparty, input.category], autonomy: "aprovar", createdAt: new Date().toISOString() }, ...current.anaAuditEvents] };
+    });
+    if (confirmed) toast.success("Documento confirmado");
+    return confirmed;
+  }, []);
+
+  const createFinancialHandoff = useCallback((input: { toDepartment: "Comercial" | "Compras" | "Atendimento"; title: string; context: string }) => {
+    setState((current) => ({ ...current, financialHandoffs: [{ id: crypto.randomUUID(), fromEmployeeId: "ana", ...input, status: "created", createdAt: new Date().toISOString() }, ...current.financialHandoffs], anaAuditEvents: [{ id: crypto.randomUUID(), action: `Handoff para ${input.toDepartment}`, reason: input.context, dataUsed: [input.title], autonomy: "aprovar", createdAt: new Date().toISOString() }, ...current.anaAuditEvents], activities: [{ id: crypto.randomUUID(), employeeId: "ana", title: input.title, description: `Ana encaminhou o contexto ao setor ${input.toDepartment}.`, type: "colaboração", createdAt: "Agora" }, ...current.activities] }));
+    toast.success(`Handoff criado para ${input.toDepartment}`);
+  }, []);
+
+  const setFinancialBudget = useCallback((category: string, limit: number) => {
+    if (!category.trim() || limit <= 0) return;
+    const period = new Date().toISOString().slice(0, 7);
+    setState((current) => ({ ...current, financialBudgets: [{ id: crypto.randomUUID(), category: category.trim(), limit, period }, ...current.financialBudgets.filter((item) => !(item.category.toLocaleLowerCase("pt-BR") === category.trim().toLocaleLowerCase("pt-BR") && item.period === period))], anaAuditEvents: [{ id: crypto.randomUUID(), action: "Orçamento atualizado", reason: `Limite de ${limit.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} definido para ${category}.`, dataUsed: [category, period], autonomy: "aprovar", createdAt: new Date().toISOString() }, ...current.anaAuditEvents] }));
+    toast.success("Orçamento salvo");
+  }, []);
+
   const logoutLocal = useCallback(() => {
     clearLocalSession();
     router.replace("/login");
@@ -204,7 +256,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     }
   }, [account, refreshBackend]);
 
-  const value = useMemo(() => ({ ...state, account, backendEnabled: hasBackend, delegateTask, resolveApproval, toggleIntegration, hireEmployee, setEmployeeStatus, updateOrganization, importFinancialAccounts, runAnaAnalysis, logoutLocal, resetLocalMvp }), [state, account, delegateTask, resolveApproval, toggleIntegration, hireEmployee, setEmployeeStatus, updateOrganization, importFinancialAccounts, runAnaAnalysis, logoutLocal, resetLocalMvp]);
+  const value = useMemo(() => ({ ...state, account, backendEnabled: hasBackend, delegateTask, resolveApproval, toggleIntegration, hireEmployee, setEmployeeStatus, updateOrganization, importFinancialAccounts, runAnaAnalysis, processFinancialDocuments, confirmFinancialDocument, createFinancialHandoff, setFinancialBudget, logoutLocal, resetLocalMvp }), [state, account, delegateTask, resolveApproval, toggleIntegration, hireEmployee, setEmployeeStatus, updateOrganization, importFinancialAccounts, runAnaAnalysis, processFinancialDocuments, confirmFinancialDocument, createFinancialHandoff, setFinancialBudget, logoutLocal, resetLocalMvp]);
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
 }
 
