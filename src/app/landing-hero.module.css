@@ -14,6 +14,10 @@
   top: 80px !important;
 }
 
+@media (min-width: 1300px) {
+  :global(.landing-float-left) { top: 560px !important; }
+}
+
 @media (max-width: 900px) {
   .heroCopy { top: 105px !important; }
   .robotWrap { top: 110px !important; }

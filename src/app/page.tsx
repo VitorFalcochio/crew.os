@@ -2,11 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
+  Activity,
   BadgeCheck,
-  BarChart3,
   Bot,
+  BrainCircuit,
   Check,
   Clock3,
+  FileCheck2,
   Network,
   Play,
   ShieldCheck,
@@ -14,14 +16,17 @@ import {
   Zap,
 } from "lucide-react";
 import { Logo } from "@/components/layout/logo";
-import { Avatar } from "@/components/ui/avatar";
 import styles from "./landing-hero.module.css";
+import experience from "./landing-experience.module.css";
 
 const employees = [
-  { name: "Ana", initials: "AN", color: "#8b5cf6", department: "Financeiro", description: "Controla o caixa, acompanha vencimentos e prepara cobranças.", icon: BarChart3 },
-  { name: "Carlos", initials: "CA", color: "#3b82f6", department: "Compras", description: "Compara fornecedores, preços, prazos e condições.", icon: BadgeCheck },
-  { name: "Sofia", initials: "SO", color: "#06b6d4", department: "Atendimento", description: "Organiza solicitações e responde clientes com consistência.", icon: Sparkles },
-  { name: "Lucas", initials: "LU", color: "#f59e0b", department: "Comercial", description: "Qualifica oportunidades e mantém o funil em movimento.", icon: Zap },
+  { name: "Ana", image: "/employees/ana.png", department: "Financeiro", description: "Organiza documentos, acompanha o caixa e prepara cobranças." },
+  { name: "Carlos", image: "/employees/carlos.png", department: "Compras", description: "Compara fornecedores, preços, prazos e condições." },
+  { name: "Sofia", image: "/employees/sofia.png", department: "Atendimento", description: "Resolve solicitações e mantém o contexto de cada cliente." },
+  { name: "Lucas", image: "/employees/lucas.png", department: "Comercial", description: "Qualifica oportunidades e mantém o funil em movimento." },
+  { name: "Julia", image: "/employees/julia.png", department: "Marketing", description: "Planeja campanhas e transforma estratégia em conteúdo." },
+  { name: "Marta", image: "/employees/marta.png", department: "Fiscal", description: "Monitora obrigações e sinaliza riscos antes do prazo." },
+  { name: "Rafael", image: "/employees/rafael.png", department: "Imobiliário", description: "Acompanha leads, imóveis e oportunidades comerciais." },
 ];
 
 const steps = [
@@ -61,30 +66,93 @@ export default function Home() {
       <div className="landing-scroll"><span>Descubra</span><i /></div>
     </section>
 
-    <section className="landing-proof" aria-label="Benefícios"><span><Check size={13} /> Configuração em minutos</span><span><ShieldCheck size={13} /> Você mantém o controle</span><span><Zap size={13} /> Trabalho contínuo</span><span><Bot size={13} /> Especialistas por departamento</span></section>
+    <section className={experience.proof} aria-label="Benefícios">
+      <span><Check size={14} /> Configuração em minutos</span>
+      <span><ShieldCheck size={14} /> Controle humano</span>
+      <span><Zap size={14} /> Operação contínua</span>
+      <span><Bot size={14} /> Especialistas por área</span>
+    </section>
 
-    <section className="landing-section landing-product" id="produto">
-      <div className="landing-section-heading"><span className="landing-section-number">01 / PRODUTO</span><h2>Não é mais uma ferramenta.<br />É a sua <em>equipe.</em></h2><p>A CrewOS reúne funcionários digitais, contexto empresarial, integrações e controle humano em um único sistema operacional.</p></div>
-      <div className="landing-product-grid">
-        <article className="landing-feature-main"><div className="landing-feature-visual"><span className="landing-orbit one" /><span className="landing-orbit two" /><div className="landing-core"><Image src="/crewos-logo.png" alt="" width={68} height={68} /></div><div className="landing-node node-one">Financeiro</div><div className="landing-node node-two">Comercial</div><div className="landing-node node-three">Atendimento</div></div><div><span>INTELIGÊNCIA COORDENADA</span><h3>Uma equipe que trabalha em conjunto</h3><p>Seus funcionários compartilham contexto, colaboram entre departamentos e sabem quando chamar você.</p></div></article>
-        <div className="landing-feature-stack"><article><span className="landing-feature-icon"><Clock3 size={18} /></span><div><small>CONTINUIDADE</small><h3>O trabalho não para</h3><p>Rotinas, análises e acompanhamentos continuam mesmo quando você está offline.</p></div></article><article><span className="landing-feature-icon"><ShieldCheck size={18} /></span><div><small>CONTROLE</small><h3>Você decide o limite</h3><p>Ações sensíveis aguardam sua aprovação. Toda decisão fica registrada e rastreável.</p></div></article></div>
+    <section className={experience.operation} id="produto">
+      <div className={experience.sectionIntro}>
+        <span>01 · A CREW EM OPERAÇÃO</span>
+        <h2>Você diz o objetivo.<br />A equipe faz <em>acontecer.</em></h2>
+        <p>O Diretor entende o que precisa ser feito, escolhe os especialistas certos e acompanha cada entrega sem perder o contexto da empresa.</p>
+      </div>
+
+      <div className={experience.operationStage}>
+        <div className={experience.commandSide}>
+          <div className={experience.commandLabel}><Sparkles size={15} /><span>Objetivo da empresa</span></div>
+          <blockquote>“Revise o caixa deste mês e encontre oportunidades para reduzir custos com fornecedores.”</blockquote>
+          <div className={experience.directorReply}>
+            <span><BrainCircuit size={18} /></span>
+            <div><small>DIRETOR CREW</small><strong>Plano criado. Duas frentes coordenadas.</strong><p>Vou acionar Financeiro e Compras, preservar as aprovações e acompanhar os resultados.</p></div>
+          </div>
+        </div>
+
+        <div className={experience.executionSide}>
+          <header><div><i /> Execução ao vivo</div><span>2 especialistas ativos</span></header>
+          <div className={experience.assignment}>
+            <Image src="/employees/ana.png" alt="Ana, especialista financeira" width={44} height={44} />
+            <div><small>ANA · FINANCEIRO</small><strong>Analisando caixa e vencimentos</strong><span><b style={{ width: "82%" }} /></span></div>
+            <em>82%</em>
+          </div>
+          <div className={experience.assignment}>
+            <Image src="/employees/carlos.png" alt="Carlos, especialista em compras" width={44} height={44} />
+            <div><small>CARLOS · COMPRAS</small><strong>Comparando contratos recorrentes</strong><span><b style={{ width: "64%" }} /></span></div>
+            <em>64%</em>
+          </div>
+          <div className={experience.handoff}><Network size={15} /><div><strong>Contexto compartilhado</strong><p>Ana sinalizou dois fornecedores para renegociação.</p></div><Check size={14} /></div>
+          <footer><Activity size={14} /> Tudo registrado na atividade da Crew</footer>
+        </div>
       </div>
     </section>
 
-    <section className="landing-section landing-team" id="equipe">
-      <div className="landing-section-heading row"><div><span className="landing-section-number">02 / EQUIPE DIGITAL</span><h2>Especialistas prontos<br />para <em>trabalhar.</em></h2></div><p>Comece com os departamentos que mais precisam de velocidade. Amplie sua equipe conforme a empresa cresce.</p></div>
-      <div className="landing-employee-grid">{employees.map(({ name, initials, color, department, description, icon: Icon }, index) => <article key={name}><div className="landing-employee-top"><span>0{index + 1}</span><Icon size={18} /></div><div className="landing-employee-avatar"><Avatar initials={initials} color={color} size="xl" status="trabalhando" /></div><small>{department}</small><h3>{name}</h3><p>{description}</p><Link href="/cadastro">Adicionar à equipe <ArrowRight size={13} /></Link></article>)}</div>
+    <section className={experience.team} id="equipe">
+      <div className={experience.teamHeading}>
+        <div><span>02 · SUA EQUIPE DIGITAL</span><h2>Um especialista para<br />cada parte da <em>empresa.</em></h2></div>
+        <p>Comece por uma área e amplie conforme a operação cresce. Cada funcionário possui contexto, ferramentas e responsabilidades próprias.</p>
+      </div>
+      <div className={experience.employeeRail}>
+        {employees.map((employee, index) => (
+          <article key={employee.name}>
+            <div className={experience.employeePhoto}><Image src={employee.image} alt={`${employee.name}, especialista de ${employee.department}`} fill sizes="(max-width: 600px) 78vw, 280px" /></div>
+            <div className={experience.employeeInfo}><span>0{index + 1} · {employee.department}</span><h3>{employee.name}</h3><p>{employee.description}</p><Link href="/cadastro">Adicionar à equipe <ArrowRight size={14} /></Link></div>
+          </article>
+        ))}
+      </div>
     </section>
 
-    <section className="landing-section landing-how" id="como-funciona">
-      <div className="landing-section-heading"><span className="landing-section-number">03 / COMO FUNCIONA</span><h2>Do objetivo ao resultado,<br />sem <em>complexidade.</em></h2></div>
-      <div className="landing-steps">{steps.map(([number, title, description]) => <article key={number}><span>{number}</span><div><h3>{title}</h3><p>{description}</p></div><ArrowRight size={17} /></article>)}</div>
+    <section className={experience.control}>
+      <div className={experience.controlCopy}>
+        <span>03 · CONTROLE HUMANO</span>
+        <h2>Autonomia sem<br />perder o <em>controle.</em></h2>
+        <p>A Crew trabalha sozinha dentro dos limites que você definir. Decisões sensíveis chegam com contexto, impacto e dados usados.</p>
+        <ul><li><Check size={14} /> Limites diferentes por funcionário</li><li><Check size={14} /> Aprovação antes de ações sensíveis</li><li><Check size={14} /> Histórico completo e rastreável</li></ul>
+      </div>
+      <div className={experience.approvalDemo}>
+        <header><span><BadgeCheck size={16} /></span><div><small>APROVAÇÃO SOLICITADA</small><strong>Ana · Financeiro</strong></div><em>Agora</em></header>
+        <h3>Enviar cobrança · Beta Engenharia</h3>
+        <strong className={experience.approvalValue}>R$ 6.730</strong>
+        <dl><div><dt>Motivo</dt><dd>Pagamento vencido há 7 dias.</dd></div><div><dt>Impacto</dt><dd>Recupera o valor no caixa desta semana.</dd></div></dl>
+        <div className={experience.approvalButtons}><span>Aprovar</span><span>Editar</span><span>Recusar</span></div>
+        <footer><FileCheck2 size={13} /> A decisão ficará registrada na auditoria.</footer>
+      </div>
     </section>
 
-    <section className="landing-final-cta">
-      <div className="landing-cta-grid" aria-hidden="true" /><span className="landing-pill"><i /> Sua equipe está pronta</span><h2>O futuro do trabalho<br />começa <em>agora.</em></h2><p>Crie sua empresa na CrewOS e coloque seus primeiros funcionários digitais para trabalhar.</p><Link href="/cadastro" className="landing-primary-cta">Montar minha equipe <ArrowRight size={16} /></Link>
+    <section className={experience.how} id="como-funciona">
+      <div className={experience.sectionIntro}><span>04 · COMO COMEÇAR</span><h2>Da configuração ao resultado,<br />sem <em>complexidade.</em></h2></div>
+      <div className={experience.steps}>{steps.map(([number, title, description]) => <article key={number}><span>{number}</span><div><h3>{title}</h3><p>{description}</p></div><ArrowRight size={18} /></article>)}</div>
     </section>
 
-    <footer className="landing-footer"><Logo /><p>CrewOS é o sistema que transforma trabalho em resultado.</p><div><Link href="/login">Entrar</Link><Link href="/cadastro">Criar conta</Link></div><small>© 2026 CrewOS. Sua empresa. Sua equipe digital.</small></footer>
+    <section className={experience.finalCta}>
+      <div className={experience.finalGlow} aria-hidden="true" />
+      <span className="landing-pill"><i /> Sua equipe está pronta</span>
+      <h2>Coloque sua empresa<br />em <em>movimento.</em></h2>
+      <p>Monte sua primeira equipe digital e delegue o próximo resultado que precisa acontecer.</p>
+      <Link href="/cadastro" className="landing-primary-cta">Criar minha equipe <ArrowRight size={16} /></Link>
+    </section>
+
+    <footer className={experience.footer}><Logo /><p>CrewOS é o sistema operacional da sua equipe digital.</p><div><Link href="/login">Entrar</Link><Link href="/cadastro">Criar conta</Link></div><small>© 2026 CrewOS. Sua empresa. Sua equipe digital.</small></footer>
   </main>;
 }
