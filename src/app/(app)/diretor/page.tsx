@@ -21,6 +21,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useDemo } from "@/features/demo/demo-provider";
 import { buildDirectorPlan, buildDirectorSnapshot, type DirectorPlan } from "@/features/crew/director";
+import "./director.css";
 
 const suggestions = [
   "Revise pagamentos e compras que precisam de decisão hoje",
