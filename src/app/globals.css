@@ -289,3 +289,4 @@ h3 { margin: 0; font-size: 14px; }
 @media(max-width:600px){.ana-dropzone{min-height:250px;justify-content:flex-start;padding:28px}.ana-dropzone>div{flex-basis:100%}}
 .ana-workspace[data-tab="Contas"]>.ana-panel-stack>section:nth-of-type(2){display:none}.ana-collection-action{display:flex;flex-direction:column;align-items:flex-start;gap:18px}.ana-collection-action>div{display:grid;gap:4px}.ana-collection-action small{color:var(--muted);font-size:9px}.ana-collection-action strong{font-size:22px}.ana-collection-action .button{margin-top:auto}
 .ana-workspace-tabs{gap:2px;padding:3px}.ana-workspace-tabs button{min-height:32px;padding:0 9px;font-size:8px}
+.ana-workspace[data-tab="Auditoria"]>.ana-two-columns{grid-template-columns:1fr}.ana-workspace[data-tab="Auditoria"]>.ana-two-columns>section:nth-of-type(2){display:none}
