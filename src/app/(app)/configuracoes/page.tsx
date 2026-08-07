@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Bell, Building2, RotateCcw, Save, ShieldCheck } from "lucide-react";
+import { Bell, Building2, RotateCcw, Save, ShieldCheck, Trash2 } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { useDemo } from "@/features/demo/demo-provider";
@@ -10,7 +10,7 @@ import { useDemo } from "@/features/demo/demo-provider";
 const defaultPolicy = "Compras, pagamentos, envios externos e publicações sempre exigem aprovação humana.";
 
 export default function SettingsPage() {
-  const { account, updateOrganization } = useDemo();
+  const { account, backendEnabled, updateOrganization, resetLocalMvp } = useDemo();
   const [company, setCompany] = useState({ name: account.organization, industry: "Construção civil", policy: defaultPolicy });
   const [preferences, setPreferences] = useState({ approvals: true, failures: true, dailySummary: true, autonomy: "supervisionada" });
   const [saved, setSaved] = useState(false);
@@ -44,5 +44,6 @@ export default function SettingsPage() {
       <section className="card card-pad"><div className="settings-section-head"><span className="metric-icon"><Bell size={16} /></span><div><h2>Notificações</h2><p className="subtitle">Escolha quando a CrewOS chama sua atenção.</p></div></div><div className="settings-switches"><label><span><strong>Novas aprovações</strong><small>Quando uma ação aguarda sua decisão</small></span><input type="checkbox" checked={preferences.approvals} onChange={(event) => setPreferences({ ...preferences, approvals: event.target.checked })} /></label><label><span><strong>Falhas e bloqueios</strong><small>Quando uma execução precisa de ajuda</small></span><input type="checkbox" checked={preferences.failures} onChange={(event) => setPreferences({ ...preferences, failures: event.target.checked })} /></label><label><span><strong>Resumo diário</strong><small>Relatório do trabalho concluído no dia</small></span><input type="checkbox" checked={preferences.dailySummary} onChange={(event) => setPreferences({ ...preferences, dailySummary: event.target.checked })} /></label></div></section>
       <div className="settings-actions"><span>{saved ? "Tudo salvo" : "Alterações ainda não salvas"}</span><Button type="button" variant="ghost" onClick={restore}><RotateCcw size={14} />Restaurar padrões</Button><Button type="submit"><Save size={14} />Salvar alterações</Button></div>
     </form>
+    {!backendEnabled && <section className="card card-pad" style={{ marginTop: 14 }}><div className="settings-section-head"><span className="metric-icon"><Trash2 size={16} /></span><div><h2>Reiniciar validação local</h2><p className="subtitle">Apaga conta, empresa, recebíveis, tarefas e decisões deste navegador para começar outro teste.</p></div></div><Button variant="danger" onClick={() => { if (window.confirm("Apagar todo o MVP local e voltar ao cadastro?")) resetLocalMvp(); }}><Trash2 size={14} />Apagar ambiente local</Button></section>}
   </>;
 }

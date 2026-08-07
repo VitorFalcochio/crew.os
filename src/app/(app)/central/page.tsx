@@ -23,6 +23,7 @@ import {
   Zap,
   BookOpen,
   ShieldCheck,
+  TestTube2,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { useDemo } from "@/features/demo/demo-provider";
@@ -56,7 +57,7 @@ function chooseEmployee(prompt: string, employees: Employee[]) {
 }
 
 export default function CentralPage() {
-  const { tasks, approvals, activities, employees, integrations, account, delegateTask, resolveApproval } = useDemo();
+  const { tasks, approvals, activities, employees, integrations, account, backendEnabled, delegateTask, resolveApproval, runAnaAnalysis } = useDemo();
   const [command, setCommand] = useState("");
   const hired = employees.filter((employee) => employee.hired);
   const impact = buildCrewImpactSummary({ employees, tasks, approvals, activities, integrations });
@@ -83,7 +84,8 @@ export default function CentralPage() {
     if (!prompt) return;
     const employee = chooseEmployee(prompt, hired);
     if (!employee) return;
-    delegateTask({ employeeId: employee.id, title: prompt.slice(0, 90), description: prompt, priority: "média", requiresApproval: true });
+    if (!backendEnabled && employee.id === "ana") runAnaAnalysis();
+    else delegateTask({ employeeId: employee.id, title: prompt.slice(0, 90), description: prompt, priority: "média", requiresApproval: true });
     setCommand("");
   }
 
@@ -96,6 +98,8 @@ export default function CentralPage() {
       </div>
       <div className="crew-date"><CalendarDays size={15} /><span><small>Hoje</small>{today}</span></div>
     </header>
+
+    {!backendEnabled && <Link href="/financeiro" className="local-mvp-entry"><span><TestTube2 size={17} /></span><div><strong>Validar o MVP da Ana</strong><small>Cadastre contas a receber, execute a análise e tome uma decisão simulada.</small></div><ArrowRight size={15} /></Link>}
 
     <section className="crew-command-card">
       <div className="crew-command-intro"><span><Sparkles size={16} /></span><div><strong>O que sua equipe deve fazer?</strong><small>Descreva um objetivo. A CrewOS escolhe a pessoa certa e organiza o trabalho.</small></div></div>
@@ -200,11 +204,11 @@ export default function CentralPage() {
         <div className="crew-company-score"><span><Users size={16} /></span><div><small>Eficiência geral</small><strong>{hired.length ? Math.round(hired.reduce((sum, employee) => sum + employee.performance, 0) / hired.length) : 0}%</strong></div><em>Excelente</em></div>
       </article>
 
-      <article className="crew-panel crew-schedule-panel">
+      {backendEnabled && <article className="crew-panel crew-schedule-panel">
         <div className="crew-panel-head"><div><span className="crew-kicker"><CalendarDays size={13} /> Automático</span><h2>Próximas execuções</h2></div></div>
         <div className="crew-schedule">{schedules.map((schedule) => <div key={schedule.time + schedule.label}><time>{schedule.time}</time><i style={{ "--schedule-tone": schedule.tone } as React.CSSProperties} /><span><strong>{schedule.label}</strong><small>{schedule.owner}</small></span></div>)}</div>
         <Link href="/rotinas" className="crew-panel-footer">Gerenciar rotinas <ArrowRight size={13} /></Link>
-      </article>
+      </article>}
     </section>
   </div>;
 }

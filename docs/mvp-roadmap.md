@@ -20,6 +20,19 @@ O MVP não considera uma tarefa concluída sem uma entrega verificável. Dados s
 
 ## Partes
 
+### 0. Validação local do produto
+
+- [x] Criar conta e sessão persistidas somente no navegador.
+- [x] Criar empresa e contratar Ana no onboarding local.
+- [x] Começar com dados operacionais vazios, sem métricas do seed.
+- [x] Cadastrar contas a receber manualmente ou por massa de teste.
+- [x] Executar análise local de vencimentos.
+- [x] Criar aprovação rastreável e registrar aprovação, recusa ou ajuste.
+- [x] Informar explicitamente que nenhum envio externo aconteceu.
+- [x] Permitir apagar o ambiente e repetir toda a validação.
+- [ ] Permitir editar o conteúdo da cobrança antes de aprovar.
+- [ ] Consolidar os aprendizados dos testes com usuários.
+
 ### 1. Fundação segura
 
 - [x] Inicializar o repositório Git na branch `main`.
@@ -75,4 +88,3 @@ O MVP não considera uma tarefa concluída sem uma entrega verificável. Dados s
 - Múltiplos canais de cobrança.
 
 Essas áreas permanecem na visão do produto, mas só avançam depois que o fluxo da Ana estiver comprovado de ponta a ponta.
-

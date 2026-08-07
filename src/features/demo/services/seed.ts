@@ -1,4 +1,4 @@
-import type { Activity, Approval, DemoState, Employee, Integration, Task } from "@/types/domain";
+import type { Activity, Approval, DemoState, Employee, FinancialAccount, Integration, Task } from "@/types/domain";
 
 export const employees: Employee[] = [
   { id: "ana", name: "Ana", initials: "AN", role: "Financeiro Digital", department: "Financeiro", level: "Especialista", description: "Mantém o caixa sob controle, encontra riscos e prepara ações financeiras para sua aprovação.", status: "aguardando aprovação", currentTask: "Preparando cobranças em atraso", tasksCompleted: 148, performance: 96, successRate: 98, averageTime: "8 min", savings: 18420, monthlyPrice: 149, hired: true, color: "#8b5cf6", skills: ["Fluxo de caixa", "Contas a pagar", "Cobranças", "Conciliação"], responsibilities: ["Analisar contas a pagar e receber", "Identificar vencimentos e anomalias", "Preparar cobranças com aprovação", "Gerar resumos financeiros"], tools: ["ERP Alpha", "Google Drive", "Gerador de cobrança"] },
@@ -42,4 +42,10 @@ export const integrations: Integration[] = [
   { id: "webhook", name: "Webhook", description: "Conecte qualquer sistema por eventos", category: "Desenvolvimento", connected: false, initials: "WH" },
 ];
 
-export const initialDemoState: DemoState = { employees, tasks, approvals, activities, integrations };
+export const financialAccounts: FinancialAccount[] = [
+  { id: "account-sample-1", customerName: "Incorporadora Vale", document: "NF-1042", amount: 8200, dueDate: "2026-08-04", status: "overdue", source: "sample", createdAt: "Demonstração" },
+  { id: "account-sample-2", customerName: "Residencial Aurora", document: "NF-1048", amount: 5940, dueDate: "2026-08-01", status: "overdue", source: "sample", createdAt: "Demonstração" },
+  { id: "account-sample-3", customerName: "Construtora Pátio", document: "NF-1060", amount: 12900, dueDate: "2026-08-09", status: "open", source: "sample", createdAt: "Demonstração" },
+];
+
+export const initialDemoState: DemoState = { employees, tasks, approvals, activities, integrations, financialAccounts };

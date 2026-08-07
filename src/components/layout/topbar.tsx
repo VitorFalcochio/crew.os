@@ -24,7 +24,7 @@ export function Topbar() {
   const close = () => { setPanel(null); setQuery(""); };
 
   return <header className="topbar"><div className="mobile-brand"><Logo /></div><div className="topbar-actions" style={{ marginLeft: "auto" }}>
-    {!backendEnabled && <span className="demo-mode-badge" title="Dados locais de demonstração; nenhuma ação externa será executada"><i />Modo demonstração</span>}
+    {!backendEnabled && <span className="demo-mode-badge" title="Dados locais de validação; nenhuma ação externa será executada"><i />MVP local · simulado</span>}
     <button className={`icon-button ${panel === "search" ? "active" : ""}`} aria-label="Pesquisar" aria-expanded={panel === "search"} onClick={() => setPanel((current) => current === "search" ? null : "search")}><Search size={17} /></button>
     <button className={`icon-button notification-button ${panel === "notifications" ? "active" : ""}`} aria-label="Notificações" aria-expanded={panel === "notifications"} onClick={() => setPanel((current) => current === "notifications" ? null : "notifications")}><Bell size={17} />{pending.length > 0 && <i>{pending.length}</i>}</button>
     <Link href="/delegacoes?nova=1"><Button><Plus size={15} /><span>Nova delegação</span></Button></Link>

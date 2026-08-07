@@ -70,10 +70,22 @@ export interface Integration {
   initials: string;
 }
 
+export interface FinancialAccount {
+  id: string;
+  customerName: string;
+  document: string;
+  amount: number;
+  dueDate: string;
+  status: "open" | "paid" | "overdue";
+  source: "manual" | "sample" | "api";
+  createdAt: string;
+}
+
 export interface DemoState {
   employees: Employee[];
   tasks: Task[];
   approvals: Approval[];
   activities: Activity[];
   integrations: Integration[];
+  financialAccounts: FinancialAccount[];
 }

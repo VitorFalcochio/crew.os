@@ -6,6 +6,8 @@ type ExtendedActivity = Activity & {
   metadata?: Record<string, unknown>;
 };
 
+type CrewIntelligenceState = Pick<DemoState, "employees" | "tasks" | "approvals" | "activities" | "integrations">;
+
 export interface CrewImpactSummary {
   moneyRecoveredOrProtected: number;
   timeSavedMinutes: number;
@@ -147,11 +149,10 @@ function impactFromActivity(activity: ExtendedActivity, employee?: Employee, tas
   return { moneySaved, timeSavedMinutes, revenueGenerated, riskPrevented };
 }
 
-export function buildCrewImpactSummary(state: DemoState): CrewImpactSummary {
+export function buildCrewImpactSummary(state: CrewIntelligenceState): CrewImpactSummary {
   const hired = state.employees.filter((employee) => employee.hired);
   const approvedMoney = state.approvals.filter((approval) => approval.status === "aprovada").reduce((sum, approval) => sum + (approval.amount ?? 0), 0);
-  const pendingMoney = state.approvals.filter((approval) => approval.status === "pendente").reduce((sum, approval) => sum + (approval.amount ?? 0), 0);
-  const moneyRecoveredOrProtected = hired.reduce((sum, employee) => sum + employee.savings, 0) + approvedMoney + pendingMoney;
+  const moneyRecoveredOrProtected = hired.reduce((sum, employee) => sum + employee.savings, 0) + approvedMoney;
   const timeSavedMinutes = hired.reduce((sum, employee) => sum + Math.round(employee.tasksCompleted * (employee.performance / 10)), 0);
   const tasksExecuted = state.tasks.filter((task) => task.status === "concluída").length;
   const issuesFound = state.tasks.filter((task) => task.status === "falhou").length + state.approvals.filter((approval) => approval.status === "pendente").length;
@@ -161,7 +162,7 @@ export function buildCrewImpactSummary(state: DemoState): CrewImpactSummary {
   return { moneyRecoveredOrProtected, timeSavedMinutes, tasksExecuted, issuesFound, pendingDecisions, riskPrevented };
 }
 
-export function buildCrewActivities(state: DemoState): CrewActivityDetail[] {
+export function buildCrewActivities(state: CrewIntelligenceState): CrewActivityDetail[] {
   const approvalByTask = new Map(state.approvals.map((approval) => [approval.taskId, approval] as const));
   return state.activities.map((activity) => {
     const typedActivity = activity as ExtendedActivity;
@@ -190,7 +191,7 @@ export function buildCrewActivities(state: DemoState): CrewActivityDetail[] {
   });
 }
 
-export function buildCrewBriefing(state: DemoState): CrewBriefingSnapshot {
+export function buildCrewBriefing(state: CrewIntelligenceState): CrewBriefingSnapshot {
   const hired = state.employees.filter((employee) => employee.hired);
   const pendingApprovals = state.approvals.filter((approval) => approval.status === "pendente").sort((a, b) => (b.amount ?? 0) - (a.amount ?? 0));
   const activeTasks = state.tasks.filter((task) => ["planejando", "executando", "aguardando ferramenta", "aguardando aprovação", "aguardando_aprovacao"].includes(task.status));

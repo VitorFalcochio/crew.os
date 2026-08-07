@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, BadgeCheck, BookOpen, Building2, ChevronLeft, ChevronRight, CreditCard, LayoutDashboard, LogOut, Plug, Repeat2, Settings, ShieldCheck, ShoppingBag, UsersRound } from "lucide-react";
+import { Activity, BadgeCheck, BookOpen, Building2, ChevronLeft, ChevronRight, CreditCard, LayoutDashboard, LogOut, Plug, ReceiptText, Repeat2, Settings, ShieldCheck, ShoppingBag, UsersRound } from "lucide-react";
 import { Logo } from "./logo";
 import { useDemo } from "@/features/demo/demo-provider";
 import { logout } from "@/features/auth/actions";
@@ -11,6 +11,7 @@ import { logout } from "@/features/auth/actions";
 const navigation = [
   { href: "/central", label: "Central", icon: LayoutDashboard },
   { href: "/equipe", label: "Minha Equipe", icon: UsersRound },
+  { href: "/financeiro", label: "MVP da Ana", icon: ReceiptText },
   { href: "/delegacoes", label: "Delegações", icon: Building2 },
   { href: "/rotinas", label: "Rotinas", icon: Repeat2 },
   { href: "/aprovacoes", label: "Aprovações", icon: BadgeCheck, approvals: true },
@@ -45,7 +46,7 @@ function getServerSidebarSnapshot() {
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { approvals, employees, account } = useDemo();
+  const { approvals, employees, account, backendEnabled, logoutLocal } = useDemo();
   const collapsed = useSyncExternalStore(subscribeToSidebar, getSidebarSnapshot, getServerSidebarSnapshot);
 
   function toggleSidebar() {
@@ -81,7 +82,7 @@ export function Sidebar() {
         <div className="user-menu">
           <span className="user-dot">{account.name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase()}</span>
           <div className="user-details"><strong>{account.name}</strong><small>{account.organization}</small></div>
-          <form action={logout}><button className="logout-button" title="Sair" aria-label="Sair da conta"><LogOut size={14} /></button></form>
+          {backendEnabled ? <form action={logout}><button className="logout-button" title="Sair" aria-label="Sair da conta"><LogOut size={14} /></button></form> : <button className="logout-button" title="Sair" aria-label="Sair da conta local" onClick={logoutLocal}><LogOut size={14} /></button>}
         </div>
       </div>
     </aside>
