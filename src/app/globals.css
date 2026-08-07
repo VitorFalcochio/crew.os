@@ -15,13 +15,19 @@
   --danger: #ef4444;
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; scrollbar-width: thin; scrollbar-color: rgba(247,247,245,.16) transparent; }
 html { background: var(--bg); color-scheme: dark; }
 body { margin: 0; background: radial-gradient(circle at 78% -10%, rgba(239, 255, 61, .045), transparent 27rem), var(--bg); color: var(--text); font-family: var(--font-sora), Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-decoration: none; }
 button, input, textarea, select { font: inherit; }
 button { cursor: pointer; }
 ::selection { background: rgba(239, 255, 61, .34); color: #0b0909; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { border: 1px solid transparent; border-radius: 999px; background: rgba(247,247,245,.16); background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background: rgba(239,255,61,.48); background-clip: padding-box; }
+::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+::-webkit-scrollbar-corner { background: transparent; }
 
 .app-shell { min-height: 100vh; display: grid; grid-template-columns: 248px minmax(0, 1fr); transition: grid-template-columns .32s cubic-bezier(.2,.75,.25,1); }
 .app-shell:has(.sidebar.collapsed) { grid-template-columns: 84px minmax(0, 1fr); }
