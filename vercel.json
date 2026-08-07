@@ -1,0 +1,3 @@
+{
+  "crons": [{ "path": "/api/internal/tick?batch=5", "schedule": "* * * * *" }]
+}
