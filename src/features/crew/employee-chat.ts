@@ -6,6 +6,18 @@ type ChatState = Pick<DemoState, "tasks" | "approvals" | "financialEntries" | "f
 const normalize = (value: string) => value.trim().toLocaleLowerCase("pt-BR");
 const brl = (value: number) => value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+function socialReply(employee: Employee, question: string) {
+  const query = normalize(question).replace(/[!?.,]+/g, " ").replace(/\s+/g, " ").trim();
+  const specialty = employee.id === "ana" ? "o financeiro" : employee.id === "carlos" ? "suas compras" : employee.department.toLocaleLowerCase("pt-BR");
+  if (/^(oi+|olá|ola|e aí|e ai|bom dia|boa tarde|boa noite)\b/.test(query) || /^(tudo bem|como você está|como voce esta)\b/.test(query)) {
+    return `Oi! Tudo bem por aqui. Estou pronta para ajudar com ${specialty}. O que você gostaria de saber?`;
+  }
+  if (/^(obrigad[oa]|valeu|agradeço|agradeco)\b/.test(query)) return `Por nada! Quando precisar, estou por aqui para ajudar com ${specialty}.`;
+  if (/^(tchau|até mais|ate mais|falou|até logo|ate logo)\b/.test(query)) return "Até mais! Se surgir alguma dúvida ou decisão, é só me chamar.";
+  if (/(quem é você|quem e voce|qual (é|e) seu nome|se apresente)/.test(query)) return `Eu sou ${employee.name}, especialista de ${employee.department} da sua equipe digital. Posso analisar os dados da minha área, explicar o que encontrei e preparar recomendações para sua decisão.`;
+  return null;
+}
+
 export function employeeGreeting(employee: Employee) {
   if (employee.id === "ana") return "Olá! Sou a Ana. Posso explicar contas, documentos, atrasos, projeções de caixa e riscos usando os dados do seu Financeiro.";
   if (employee.id === "carlos") return "Olá! Sou o Carlos. Posso ajudar com requisições, cotações, fornecedores, prazos, riscos e recomendações de compra.";
@@ -56,6 +68,8 @@ function answerProcurementQuestion(question: string, state: ChatState) {
 }
 
 export function answerEmployeeQuestion(employee: Employee, question: string, state: ChatState) {
+  const conversational = socialReply(employee, question);
+  if (conversational) return conversational;
   if (employee.id === "ana") {
     const overview = buildFinancialOverview(state.financialEntries, state.financialDocuments, new Date().toISOString().slice(0, 10));
     return answerFinancialQuestion(question, overview);

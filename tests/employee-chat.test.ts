@@ -13,6 +13,12 @@ test("o chat da Ana responde usando os dados financeiros locais", () => {
   assert.match(answer, /R\$\s*2\.500,00/);
 });
 
+test("os funcionários respondem saudações antes de consultar dados técnicos", () => {
+  const answer = answerEmployeeQuestion(ana, "Oiii Ana, tudo bem?", baseState);
+  assert.match(answer, /^Oi! Tudo bem por aqui/);
+  assert.doesNotMatch(answer, /R\$/);
+});
+
 test("o chat do Carlos mantém contexto exclusivo de compras", () => {
   const context = buildEmployeeChatContext(carlos, baseState, "Construtora Alpha");
   assert.match(context, /procurementRequests/);
