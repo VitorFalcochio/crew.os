@@ -21,15 +21,13 @@ import {
   TrendingUp,
   Users,
   Zap,
-  BookOpen,
-  ShieldCheck,
   TestTube2,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { useDemo } from "@/features/demo/demo-provider";
 import { currency } from "@/lib/utils";
 import type { Employee } from "@/types/domain";
-import { buildCrewBriefing, buildCrewImpactSummary } from "@/features/crew/intelligence";
+import { buildCrewImpactSummary } from "@/features/crew/intelligence";
 
 const quickDelegations = [
   "Resuma as prioridades de hoje",
@@ -61,7 +59,6 @@ export default function CentralPage() {
   const [command, setCommand] = useState("");
   const hired = employees.filter((employee) => employee.hired);
   const impact = buildCrewImpactSummary({ employees, tasks, approvals, activities, integrations });
-  const briefing = buildCrewBriefing({ employees, tasks, approvals, activities, integrations });
   const pendingApprovals = approvals.filter((approval) => approval.status === "pendente");
   const activeTasks = tasks.filter((task) => ["executando", "planejando", "aguardando ferramenta"].includes(task.status));
   const completedTasks = impact.tasksExecuted;
@@ -116,48 +113,6 @@ export default function CentralPage() {
       <article><span className="crew-metric-icon"><Zap size={17} /></span><div><small>Em andamento</small><strong>{activeTasks.length}</strong><em>{activeEmployees} agentes ativos</em></div></article>
       <article><span className="crew-metric-icon"><Clock3 size={17} /></span><div><small>Tempo economizado</small><strong>{Math.round(impact.timeSavedMinutes / 60)}h</strong><em>{impact.timeSavedMinutes} min protegidos</em></div></article>
       <article><span className="crew-metric-icon"><CircleDollarSign size={17} /></span><div><small>Valor protegido</small><strong>{currency(impact.moneyRecoveredOrProtected)}</strong><em>{impact.pendingDecisions} decisões pendentes</em></div></article>
-    </section>
-
-    <section className="employee-grid">
-      <article className="card card-pad">
-        <div className="section-title" style={{ marginTop: 0 }}>
-          <h2>Impacto da sua Crew</h2>
-          <Link href="/briefing">Ver briefing</Link>
-        </div>
-        <div className="stat-row">
-          <div className="compact-stat"><small>Protegido</small><strong>{currency(impact.moneyRecoveredOrProtected)}</strong></div>
-          <div className="compact-stat"><small>Tempo</small><strong>{Math.round(impact.timeSavedMinutes / 60)}h</strong></div>
-          <div className="compact-stat"><small>Tarefas</small><strong>{impact.tasksExecuted}</strong></div>
-          <div className="compact-stat"><small>Riscos</small><strong>{impact.riskPrevented}</strong></div>
-        </div>
-        <div className="section-title"><h2>O que já está gerando resultado</h2></div>
-        <div className="responsibility-list">
-          <li><Check size={14} />{impact.pendingDecisions} decisões aguardam sua palavra.</li>
-          <li><Check size={14} />{impact.issuesFound} pontos de atenção foram identificados.</li>
-          <li><Check size={14} />{impact.riskPrevented} riscos já foram evitados ou contidos.</li>
-        </div>
-      </article>
-      <article className="card card-pad">
-        <div className="section-title" style={{ marginTop: 0 }}>
-          <h2>Crew Briefing</h2>
-          <Link href="/briefing">Abrir reunião</Link>
-        </div>
-        <p className="subtitle">{briefing.greeting}</p>
-        <div className="responsibility-list">
-          {briefing.speakers.slice(0, 3).map((speaker) => <li key={speaker.employeeId}><BookOpen size={14} />{speaker.name}: {speaker.message}</li>)}
-        </div>
-      </article>
-      <article className="card card-pad">
-        <div className="section-title" style={{ marginTop: 0 }}>
-          <h2>Autonomia</h2>
-          <Link href="/autonomia">Revisar políticas</Link>
-        </div>
-        <div className="responsibility-list">
-          <li><ShieldCheck size={14} />Cobranças pequenas podem acontecer automaticamente.</li>
-          <li><ShieldCheck size={14} />Cobranças acima do limite voltam para aprovação.</li>
-          <li><ShieldCheck size={14} />Pagamentos continuam bloqueados por padrão.</li>
-        </div>
-      </article>
     </section>
 
     <section className="crew-primary-grid">
