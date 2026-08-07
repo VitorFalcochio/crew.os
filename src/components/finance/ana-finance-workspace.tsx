@@ -459,7 +459,7 @@ export function AnaFinanceWorkspace() {
             <span>{docCounts.payment_proof ?? 0} comprovantes</span>
             <span>{reviewCount} para revisar</span>
           </div>
-          <div className="card table-wrap">
+          <div className="table-wrap table-surface">
             <table className="data-table">
               <thead>
                 <tr>
@@ -618,7 +618,7 @@ export function AnaFinanceWorkspace() {
       {tab === "Contas" && (
         <div className="ana-panel-stack">
           {(["payable", "receivable"] as const).map((direction) => (
-            <section className="card table-wrap" key={direction}>
+            <section className="table-wrap table-surface" key={direction}>
               <div className="table-section-heading">
                 <div>
                   <h2>
@@ -980,7 +980,7 @@ export function AnaFinanceWorkspace() {
         </div>
       )}
       {tab === "Receber" && (
-        <section className="card table-wrap">
+        <section className="table-wrap table-surface">
           <div className="table-section-heading">
             <div>
               <h2>Contas a receber</h2>
@@ -1205,7 +1205,7 @@ export function AnaFinanceWorkspace() {
               </div>
             </article>
           </div>
-          <section className="card table-wrap">
+          <section className="table-wrap table-surface">
             <div className="table-section-heading">
               <div>
                 <h2>Carteira priorizada</h2>
