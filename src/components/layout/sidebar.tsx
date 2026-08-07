@@ -1,9 +1,9 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, BadgeCheck, BookOpen, Building2, ChevronLeft, ChevronRight, CreditCard, LayoutDashboard, LogOut, Plug, ReceiptText, Repeat2, Settings, ShieldCheck, ShoppingBag, UsersRound } from "lucide-react";
+import { Activity, BadgeCheck, BookOpen, Building2, ChevronDown, ChevronLeft, ChevronRight, CreditCard, LayoutDashboard, LogOut, Plug, ReceiptText, Repeat2, Settings, ShieldCheck, ShoppingBag, UsersRound } from "lucide-react";
 import { Logo } from "./logo";
 import { useDemo } from "@/features/demo/demo-provider";
 import { logout } from "@/features/auth/actions";
@@ -48,10 +48,21 @@ export function Sidebar() {
   const pathname = usePathname();
   const { approvals, employees, account, backendEnabled, logoutLocal } = useDemo();
   const collapsed = useSyncExternalStore(subscribeToSidebar, getSidebarSnapshot, getServerSidebarSnapshot);
+  const [teamOpen, setTeamOpen] = useState(() => pathname.startsWith("/equipe"));
 
   function toggleSidebar() {
     window.localStorage.setItem(SIDEBAR_STORAGE_KEY, collapsed ? "0" : "1");
     window.dispatchEvent(new Event(SIDEBAR_CHANGE_EVENT));
+  }
+
+  function toggleTeam() {
+    if (collapsed) {
+      window.localStorage.setItem(SIDEBAR_STORAGE_KEY, "0");
+      window.dispatchEvent(new Event(SIDEBAR_CHANGE_EVENT));
+      setTeamOpen(true);
+      return;
+    }
+    setTeamOpen((current) => !current);
   }
 
   const pending = approvals.filter((approval) => approval.status === "pendente").length;
@@ -66,7 +77,29 @@ export function Sidebar() {
       </div>
       <span className="nav-label">Empresa</span>
       <nav className="nav">
-        {navigation.map(({ href, label, icon: Icon, approvals: showApprovals }) => (
+        {navigation.map(({ href, label, icon: Icon, approvals: showApprovals }) => href === "/equipe" ? (
+          <div className={`sidebar-team ${teamOpen ? "open" : ""}`} key={href}>
+            <button type="button" className={`nav-link sidebar-team-trigger ${pathname.startsWith("/equipe") ? "active" : ""}`} onClick={toggleTeam} title={collapsed ? label : undefined} aria-label={label} aria-expanded={teamOpen}>
+              <Icon size={17} strokeWidth={1.8} />
+              <span className="nav-link-label">{label}</span>
+              <ChevronDown className="sidebar-team-chevron" size={15} />
+            </button>
+            <div className="sidebar-team-submenu">
+              <div>
+                <Link href="/equipe" className={`sidebar-team-link ${pathname === "/equipe" ? "active" : ""}`}>
+                  <span className="sidebar-team-overview"><UsersRound size={13} /></span>
+                  <span>Visão da equipe</span>
+                </Link>
+                {employees.filter((employee) => employee.hired).map((employee) => (
+                  <Link key={employee.id} href={`/equipe/${employee.id}`} className={`sidebar-team-link ${pathname === `/equipe/${employee.id}` ? "active" : ""}`}>
+                    <span className="sidebar-team-avatar" style={{ background: `${employee.color}22`, color: employee.color }}>{employee.initials}</span>
+                    <span><strong>{employee.name}</strong><small>{employee.department}</small></span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
           <Link key={href} href={href} className={`nav-link ${pathname.startsWith(href) ? "active" : ""}`} title={collapsed ? label : undefined} aria-label={label}>
             <Icon size={17} strokeWidth={1.8} />
             <span className="nav-link-label">{label}</span>
