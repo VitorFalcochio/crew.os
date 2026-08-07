@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Activity, BadgeCheck, BookOpen, Building2, ChevronDown, ChevronLeft, ChevronRight, CreditCard, LayoutDashboard, LogOut, PackageSearch, Plug, ReceiptText, Repeat2, Settings, ShieldCheck, ShoppingBag, UsersRound } from "lucide-react";
 import { Logo } from "./logo";
+import { Avatar } from "@/components/ui/avatar";
 import { useDemo } from "@/features/demo/demo-provider";
 import { logout } from "@/features/auth/actions";
 
@@ -93,7 +94,7 @@ export function Sidebar() {
                 </Link>
                 {employees.filter((employee) => employee.hired).map((employee) => (
                   <Link key={employee.id} href={`/equipe/${employee.id}`} className={`sidebar-team-link ${pathname === `/equipe/${employee.id}` ? "active" : ""}`}>
-                    <span className="sidebar-team-avatar" style={{ background: `${employee.color}22`, color: employee.color }}>{employee.initials}</span>
+                    <Avatar initials={employee.initials} color={employee.color} size="xs" />
                     <span><strong>{employee.name}</strong><small>{employee.department}</small></span>
                   </Link>
                 ))}
