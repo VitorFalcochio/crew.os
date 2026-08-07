@@ -6,10 +6,12 @@ import { lucasComercialBrain } from "./lucas-comercial";
 import { martaFiscalBrain } from "./marta-fiscal";
 import { rafaelImobiliarioBrain } from "./rafael-imobiliario";
 import { sofiaAtendimentoBrain } from "./sofia-atendimento";
+import { diretorCrewBrain } from "./diretor-crew";
 
-export const employeeBrains = [anaFinanceiroBrain, carlosComprasBrain, sofiaAtendimentoBrain, juliaMarketingBrain, lucasComercialBrain, martaFiscalBrain, rafaelImobiliarioBrain] as const;
+export const employeeBrains = [diretorCrewBrain, anaFinanceiroBrain, carlosComprasBrain, sofiaAtendimentoBrain, juliaMarketingBrain, lucasComercialBrain, martaFiscalBrain, rafaelImobiliarioBrain] as const;
 const brainsByKey = new Map<string, EmployeeBrain>(employeeBrains.map((brain) => [brain.key, brain]));
 const roleMatchers: Array<[RegExp, EmployeeBrain]> = [
+  [/diretor|direção|orquestra/i, diretorCrewBrain],
   [/financ|controlador/i, anaFinanceiroBrain], [/compr|suprimento/i, carlosComprasBrain], [/atendimento|suporte|customer/i, sofiaAtendimentoBrain],
   [/marketing|conteúdo/i, juliaMarketingBrain], [/fiscal|tribut/i, martaFiscalBrain], [/imobili|corretor/i, rafaelImobiliarioBrain], [/comercial|vendas/i, lucasComercialBrain],
 ];
