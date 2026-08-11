@@ -1,0 +1,112 @@
+.clamp {
+  max-width: 430px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pill,
+.status {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 6px 8px;
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, .055);
+  font-size: 8px;
+  font-weight: 650;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.alta,
+.urgente,
+.failed { color: #fca5a5; background: rgba(239, 68, 68, .1); }
+.média,
+.awaiting_approval { color: #fbbf24; background: rgba(245, 158, 11, .1); }
+.baixa,
+.open,
+.active { color: #93c5fd; background: rgba(59, 130, 246, .1); }
+.replied,
+.contacted { color: #86efac; background: rgba(34, 197, 94, .1); }
+.closed,
+.archived { color: #a8adb4; background: rgba(148, 163, 184, .1); }
+
+.stageSelect {
+  width: 132px;
+  min-height: 32px !important;
+  padding: 0 9px !important;
+  font-size: 9px !important;
+}
+
+.pipeline {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  overflow-x: auto;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.column {
+  min-height: 420px;
+  padding: 0 14px 18px;
+  border-right: 1px solid var(--border);
+}
+
+.column:first-child { padding-left: 2px; }
+.column:last-child { padding-right: 2px; border-right: 0; }
+.column > header { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--border); }
+.column > header > div { display: grid; gap: 5px; }
+.column > header strong { font-size: 11px; }
+.column > header small { color: var(--muted); font-size: 8px; }
+.column > header > span { min-width: 22px; height: 22px; display: grid; place-items: center; color: var(--accent); background: rgba(239, 255, 61, .08); border-radius: 999px; font-size: 8px; }
+
+.leadCard {
+  display: grid;
+  gap: 11px;
+  padding: 15px 2px;
+  border-bottom: 1px solid var(--border);
+}
+
+.leadHead { min-width: 0; display: flex; align-items: center; gap: 9px; }
+.leadHead > span { width: 30px; height: 30px; flex: 0 0 30px; display: grid; place-items: center; color: var(--accent); background: rgba(239, 255, 61, .08); border-radius: 8px; font-size: 9px; font-weight: 750; }
+.leadHead > div { min-width: 0; display: grid; gap: 4px; }
+.leadHead h3 { overflow: hidden; margin: 0; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.leadHead small { overflow: hidden; color: var(--muted); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.leadCard > p { min-height: 30px; margin: 0; color: var(--muted); font-size: 9px; line-height: 1.55; }
+.leadCard > strong { font-size: 11px; }
+.leadCard footer { display: flex; align-items: center; justify-content: space-between; gap: 7px; }
+.leadCard footer select { min-width: 0; width: 125px; min-height: 30px; padding: 0 7px; font-size: 8px; }
+.leadCard footer button { width: 30px; height: 30px; display: grid; place-items: center; color: var(--accent); background: rgba(239, 255, 61, .08); border: 0; border-radius: 8px; }
+.leadCard footer button:hover:not(:disabled) { background: rgba(239, 255, 61, .14); }
+.leadCard footer button:disabled { opacity: .35; cursor: not-allowed; }
+
+@media (max-width: 900px) {
+  .pipeline { grid-template-columns: repeat(4, minmax(245px, 1fr)); }
+  .clamp { max-width: 280px; }
+}
+
+@media (max-width: 600px) {
+  .clamp { max-width: 210px; }
+}
+
+:global(html[data-theme="light"]) .pill,
+:global(html[data-theme="light"]) .status { background: rgba(31, 36, 27, .055); }
+:global(html[data-theme="light"]) .alta,
+:global(html[data-theme="light"]) .urgente,
+:global(html[data-theme="light"]) .failed { color: #b42318; background: rgba(239, 68, 68, .09); }
+:global(html[data-theme="light"]) .média,
+:global(html[data-theme="light"]) .awaiting_approval { color: #9a5d00; background: rgba(245, 158, 11, .11); }
+:global(html[data-theme="light"]) .baixa,
+:global(html[data-theme="light"]) .open,
+:global(html[data-theme="light"]) .active { color: #235ca6; background: rgba(59, 130, 246, .09); }
+:global(html[data-theme="light"]) .replied,
+:global(html[data-theme="light"]) .contacted { color: #19733a; background: rgba(34, 197, 94, .1); }
+:global(html[data-theme="light"]) .column,
+:global(html[data-theme="light"]) .column > header,
+:global(html[data-theme="light"]) .leadCard,
+:global(html[data-theme="light"]) .pipeline { border-color: rgba(31, 36, 27, .11); }
+:global(html[data-theme="light"]) .column > header > span,
+:global(html[data-theme="light"]) .leadHead > span,
+:global(html[data-theme="light"]) .leadCard footer button { color: #687700; background: rgba(223, 242, 46, .15); }

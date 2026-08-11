@@ -1,0 +1,57 @@
+.permissions { margin-top:24px }
+.permissions>header { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; padding:0 2px 22px; border-bottom:1px solid var(--border) }
+.permissions>header>div { max-width:760px }
+.permissions h2 { margin-top:7px; font-size:21px }
+.permissions header p { margin-top:8px; color:var(--muted); font-size:11px; line-height:1.7 }
+.secure { display:flex; align-items:center; gap:6px; padding:7px 9px; border:1px solid rgba(239,255,61,.16); border-radius:8px; color:#b7d987; background:rgba(239,255,61,.035); font-size:9px; white-space:nowrap }
+.summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-bottom:1px solid var(--border) }
+.summary article { display:flex; align-items:baseline; gap:9px; min-height:72px; padding:20px 22px; border-right:1px solid var(--border) }
+.summary article:first-child { padding-left:2px }
+.summary article:last-child { border-right:0 }
+.summary strong { font-size:20px }
+.summary span { color:var(--muted); font-size:10px }
+.ruleList { display:grid }
+.ruleList>article { display:grid; grid-template-columns:38px minmax(220px,1fr) minmax(360px,auto); align-items:center; gap:14px; min-height:90px; padding:16px 2px; border-bottom:1px solid var(--border) }
+.ruleIcon { width:34px; height:34px; display:grid; place-items:center; border-radius:9px; color:var(--accent); background:rgba(239,255,61,.07) }
+.ruleList>article>div:nth-child(2) { min-width:0 }
+.ruleList strong { font-size:11px }
+.ruleList p { margin-top:5px; color:var(--muted); font-size:10px; line-height:1.5 }
+.ruleList small { display:block; margin-top:5px; color:#5f655e; font-size:8px }
+.modeControl { display:flex; padding:3px; border:1px solid var(--border); border-radius:9px; background:rgba(0,0,0,.1) }
+.modeControl button { min-height:31px; display:flex; align-items:center; justify-content:center; gap:4px; padding:0 10px; border:0; border-radius:6px; color:#747a73; background:transparent; font-size:8px; white-space:nowrap }
+.modeControl button:hover { color:var(--text) }
+.modeControl button.selected { color:var(--text); background:var(--surface-3); box-shadow:0 2px 8px rgba(0,0,0,.2) }
+.modeControl button.automatic.selected { color:#a9db80 }
+.modeControl button.approval_required.selected { color:#f7c66d }
+.modeControl button.blocked.selected { color:#f79090 }
+.permissions>footer { display:flex; align-items:flex-start; gap:8px; padding:16px 2px; color:#8c957f }
+.permissions>footer p { max-width:700px; font-size:9px; line-height:1.6 }
+
+/* Professional product scale */
+.secure { padding:8px 11px; font-size:10px }
+.summary article { min-height:82px; padding:22px 24px }
+.summary strong { font-size:23px }
+.summary span { font-size:11px }
+.ruleList>article { min-height:104px; grid-template-columns:42px minmax(220px,1fr) minmax(380px,auto); gap:16px; padding:19px 2px }
+.ruleIcon { width:38px; height:38px }
+.ruleList strong { font-size:12px }
+.ruleList p { font-size:11px }
+.ruleList small { font-size:9px }
+.modeControl { padding:4px }
+.modeControl button { min-height:35px; padding:0 12px; font-size:9px }
+.permissions>footer p { font-size:10px }
+
+@media (max-width:900px) {
+  .ruleList>article { grid-template-columns:38px minmax(0,1fr) }
+  .modeControl { grid-column:2; width:max-content }
+}
+
+@media (max-width:620px) {
+  .permissions>header { align-items:flex-start; flex-direction:column }
+  .summary article { flex-direction:column; gap:4px; padding:15px 12px }
+  .summary article:first-child { padding-left:0 }
+  .ruleList>article { grid-template-columns:32px minmax(0,1fr); gap:10px }
+  .ruleIcon { width:30px; height:30px }
+  .modeControl { grid-column:1/-1; width:100%; overflow-x:auto }
+  .modeControl button { flex:1; min-width:max-content }
+}

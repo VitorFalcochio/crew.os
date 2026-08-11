@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, Check, CheckCircle2, Clock3, MessageSquare, MoreHorizontal, Pause, Play, Search, Settings, ShieldCheck, Wrench, X } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Check, CheckCircle2, Clock3, MessageSquare, MoreHorizontal, Pause, Play, Search, Settings, Wrench, X } from "lucide-react";
 import { useDemo } from "@/features/demo/demo-provider";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { StatusPill } from "@/components/ui/status-pill";
 import { currency } from "@/lib/utils";
 import { getEmployeeCapabilities, type CapabilityStage } from "@/features/crew/capabilities";
 import { EmployeeChat } from "@/components/crew/employee-chat";
+import { EmployeePermissions } from "@/components/employees/employee-permissions";
 
 const tabs = ["Visão geral", "Funcionalidades", "Conversa", "Tarefas", "Memória", "Ferramentas", "Permissões", "Desempenho", "Atividades"];
 
@@ -18,7 +19,7 @@ const stageLabels: Record<CapabilityStage, string> = { available: "Disponível",
 
 export default function EmployeeProfilePage() {
   const { id } = useParams<{ id: string }>();
-  const { employees, tasks, activities, setEmployeeStatus } = useDemo();
+  const { employees, tasks, activities, setEmployeeStatus, backendEnabled } = useDemo();
   const employee = employees.find((item) => item.id === id);
   const [activeTab, setActiveTab] = useState("Visão geral");
   const [showMore, setShowMore] = useState(false);
@@ -44,7 +45,7 @@ export default function EmployeeProfilePage() {
     {activeTab === "Tarefas" && <section className="table-wrap table-surface" style={{ marginTop: 14 }}><table className="data-table"><thead><tr><th>Tarefa</th><th>Status</th><th>Prioridade</th><th>Prazo</th></tr></thead><tbody>{employeeTasks.map((task) => <tr key={task.id}><td><strong>{task.title}</strong><div className="muted" style={{ marginTop: 4 }}>{task.description}</div></td><td><StatusPill status={task.status} /></td><td>{task.priority}</td><td>{task.dueAt}</td></tr>)}</tbody></table></section>}
     {activeTab === "Memória" && <section className="employee-grid" style={{ marginTop: 14 }}>{["Identidade", "Empresa", "Operacional"].map((type, index) => <article className="card card-pad" key={type}><h2>Memória de {type.toLowerCase()}</h2><p className="subtitle">{index === 0 ? `${employee.role}, responsabilidades, limites e modo de atuação.` : index === 1 ? "Processos, políticas e contexto da Construtora Alpha." : "Aprendizados de tarefas, correções e preferências do gestor."}</p><div className="skill-list" style={{ marginTop: 14 }}><span className="skill">Atualizada hoje</span><span className="skill">Privada da empresa</span></div></article>)}</section>}
     {activeTab === "Ferramentas" && <section className="integration-grid" style={{ marginTop: 14 }}>{employee.tools.map((tool) => <article className="card integration-card" key={tool}><span className="integration-logo"><Wrench size={16} /></span><div><h3>{tool}</h3><p>Conectada e autorizada</p></div><StatusPill status="disponível" /></article>)}</section>}
-    {activeTab === "Permissões" && <section className="card card-pad" style={{ marginTop: 14 }}><h2>Limites de atuação</h2><p className="subtitle">Permissões efetivas para proteger decisões sensíveis.</p><div className="responsibility-list" style={{ marginTop: 20 }}><li><ShieldCheck size={15} />Pode consultar dados necessários às tarefas</li><li><ShieldCheck size={15} />Pode preparar documentos e recomendações</li><li><ShieldCheck size={15} />Exige aprovação humana para enviar, publicar, comprar ou pagar</li></div></section>}
+    {activeTab === "Permissões" && <EmployeePermissions employeeId={employee.id} employeeName={employee.name} backendEnabled={backendEnabled} />}
     {activeTab === "Desempenho" && <section className="card card-pad" style={{ marginTop: 14 }}><h2>Desempenho nos últimos 30 dias</h2><div className="stat-row" style={{ marginTop: 18 }}><div className="compact-stat"><small>Desempenho</small><strong>{employee.performance}%</strong></div><div className="compact-stat"><small>Sucesso</small><strong>{employee.successRate}%</strong></div><div className="compact-stat"><small>Entregas</small><strong>{employee.tasksCompleted}</strong></div><div className="compact-stat"><small>Valor gerado</small><strong>{currency(employee.savings)}</strong></div></div></section>}
     {activeTab === "Atividades" && <section className="card" style={{ marginTop: 14 }}><div className="timeline">{activities.filter((activity) => activity.employeeId === employee.id).map((activity) => <div className="timeline-item" key={activity.id}><span className="timeline-dot"><Check size={14} /></span><div><h3>{activity.title}</h3><p>{activity.description}</p></div><time>{activity.createdAt}</time></div>)}</div></section>}
   </>;

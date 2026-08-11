@@ -121,7 +121,10 @@ export function createLocalWorkspace(company: LocalCompany, selectedEmployeeIds:
     financialHandoffs: [],
     financialBudgets: [],
     procurementRequests: [],
+    suppliers: [],
     supplierQuotes: [],
+    supportCases: [],
+    salesLeads: [],
   };
   const workspace: LocalWorkspace = {
     version: 1,
@@ -141,7 +144,7 @@ export function readLocalWorkspace(): LocalWorkspace | null {
     const raw = window.localStorage.getItem(LOCAL_WORKSPACE_KEY);
     const workspace = raw ? JSON.parse(raw) as LocalWorkspace : null;
     if (workspace?.version !== 1) return null;
-    return { ...workspace, state: { ...workspace.state, financialAccounts: workspace.state.financialAccounts ?? [], financialCollectionEvents: workspace.state.financialCollectionEvents ?? [], financialDocuments: workspace.state.financialDocuments ?? [], financialEntries: workspace.state.financialEntries ?? [], anaAuditEvents: workspace.state.anaAuditEvents ?? [], financialHandoffs: workspace.state.financialHandoffs ?? [], financialBudgets: workspace.state.financialBudgets ?? [], procurementRequests: workspace.state.procurementRequests ?? [], supplierQuotes: workspace.state.supplierQuotes ?? [] } };
+    return { ...workspace, state: { ...workspace.state, financialAccounts: workspace.state.financialAccounts ?? [], financialCollectionEvents: workspace.state.financialCollectionEvents ?? [], financialDocuments: workspace.state.financialDocuments ?? [], financialEntries: workspace.state.financialEntries ?? [], anaAuditEvents: workspace.state.anaAuditEvents ?? [], financialHandoffs: workspace.state.financialHandoffs ?? [], financialBudgets: workspace.state.financialBudgets ?? [], procurementRequests: workspace.state.procurementRequests ?? [], suppliers: workspace.state.suppliers ?? [], supplierQuotes: workspace.state.supplierQuotes ?? [], supportCases: workspace.state.supportCases ?? [], salesLeads: workspace.state.salesLeads ?? [] } };
   } catch {
     return null;
   }

@@ -1,16 +1,22 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import {
   AlertTriangle,
+  ArrowRight,
+  BarChart3,
   Bot,
   CalendarDays,
   Check,
   Clock3,
+  FolderOpen,
   FileSearch,
   Gauge,
   History,
   Inbox,
+  Landmark,
+  LayoutDashboard,
   LoaderCircle,
   MessageSquare,
   Paperclip,
@@ -24,6 +30,7 @@ import {
   UploadCloud,
   WalletCards,
 } from "lucide-react";
+import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useDemo } from "@/features/demo/demo-provider";
 import {
@@ -34,20 +41,18 @@ import { documentTypeLabel } from "@/features/finance/document-intelligence";
 import { currency } from "@/lib/utils";
 import type { FinancialDirection, FinancialDocument } from "@/types/domain";
 
-const tabs = [
-  "Visão geral",
-  "Caixa de entrada",
-  "Contas",
-  "Receber",
-  "Cobranças",
-  "Carteira",
-  "Histórico",
-  "Agenda e caixa",
-  "Radar",
-  "Conversa",
-  "Auditoria",
-] as const;
-type Tab = (typeof tabs)[number];
+type Tab =
+  | "Visão geral"
+  | "Caixa de entrada"
+  | "Contas"
+  | "Receber"
+  | "Cobranças"
+  | "Carteira"
+  | "Histórico"
+  | "Agenda e caixa"
+  | "Radar"
+  | "Conversa"
+  | "Auditoria";
 const tabLabels: Record<Tab, string> = {
   "Visão geral": "Visão",
   "Caixa de entrada": "Entrada",
@@ -61,6 +66,20 @@ const tabLabels: Record<Tab, string> = {
   Conversa: "Chat",
   Auditoria: "Auditoria",
 };
+
+const workspaceAreas = [
+  { id: "painel", label: "Painel da Ana", description: "Resumo e prioridades", icon: LayoutDashboard, tabs: ["Visão geral", "Conversa"] as Tab[] },
+  { id: "documentos", label: "Documentos", description: "Entrada e conferência", icon: FolderOpen, tabs: ["Caixa de entrada"] as Tab[] },
+  { id: "operacoes", label: "Operações", description: "Pagar, receber e caixa", icon: Landmark, tabs: ["Contas", "Receber", "Cobranças", "Carteira", "Agenda e caixa"] as Tab[] },
+  { id: "relatorios", label: "Relatórios", description: "Riscos e rastreabilidade", icon: BarChart3, tabs: ["Radar", "Histórico", "Auditoria"] as Tab[] },
+] as const;
+
+const capabilities = [
+  { title: "Triagem inteligente", description: "Classifica notas, boletos, recibos e comprovantes e identifica dados ausentes.", tab: "Caixa de entrada" as Tab },
+  { title: "Controle de vencimentos", description: "Prioriza pagamentos, recebimentos e compromissos financeiros por risco e prazo.", tab: "Agenda e caixa" as Tab },
+  { title: "Cobranças preparadas", description: "Analisa inadimplência e prepara ações para sua aprovação antes de qualquer envio.", tab: "Cobranças" as Tab },
+  { title: "Conferência financeira", description: "Relaciona documentos, encontra duplicidades e sinaliza lançamentos inconsistentes.", tab: "Radar" as Tab },
+];
 const statusLabel = {
   processed: "Processado",
   review: "Revisar",
@@ -123,6 +142,7 @@ export function AnaFinanceWorkspace() {
   const [budget, setBudget] = useState({ category: "", limit: "" });
   const [receivableForm, setReceivableForm] = useState({
     customerName: "",
+    customerEmail: "",
     document: "",
     amount: "",
     dueDate: dateFromToday(-7),
@@ -268,6 +288,7 @@ export function AnaFinanceWorkspace() {
     importFinancialAccounts([
       {
         customerName: receivableForm.customerName.trim(),
+        customerEmail: receivableForm.customerEmail.trim().toLowerCase(),
         document: receivableForm.document.trim(),
         amount: Number(receivableForm.amount),
         dueDate: receivableForm.dueDate,
@@ -278,6 +299,7 @@ export function AnaFinanceWorkspace() {
     setReceivableForm((current) => ({
       ...current,
       customerName: "",
+      customerEmail: "",
       document: "",
       amount: "",
     }));
@@ -287,6 +309,7 @@ export function AnaFinanceWorkspace() {
     importFinancialAccounts([
       {
         customerName: "Construtora Horizonte",
+        customerEmail: "financeiro@construtorahorizonte.com.br",
         document: "NF-1042",
         amount: 1840,
         dueDate: dateFromToday(-12),
@@ -295,6 +318,7 @@ export function AnaFinanceWorkspace() {
       },
       {
         customerName: "Residencial Aurora",
+        customerEmail: "financeiro@residencialaurora.com.br",
         document: "NF-1051",
         amount: 420,
         dueDate: dateFromToday(-5),
@@ -303,6 +327,7 @@ export function AnaFinanceWorkspace() {
       },
       {
         customerName: "Obras Monte Azul",
+        customerEmail: "financeiro@obrasmonteazul.com.br",
         document: "NF-1064",
         amount: 3200,
         dueDate: dateFromToday(4),
@@ -322,11 +347,43 @@ export function AnaFinanceWorkspace() {
     }),
     {},
   );
+  const activeArea = workspaceAreas.find((area) => area.tabs.includes(tab)) ?? workspaceAreas[0];
+  const ana = demo.employees.find((employee) => employee.id === "ana");
+  const overdueReceivableTotal = overview.overdueReceivables.reduce(
+    (total, entry) => total + entry.amount - entry.paidAmount,
+    0,
+  );
+  const overduePayableTotal = overview.overduePayables.reduce(
+    (total, entry) => total + entry.amount - entry.paidAmount,
+    0,
+  );
+  const priorityActions: { title: string; description: string; value: string; tab: Tab; tone: "warning" | "danger" | "info" }[] = [
+    ...(reviewCount ? [{ title: "Revisar documentos pendentes", description: "Há informações que a Ana não confirmou sozinha.", value: `${reviewCount} pendência(s)`, tab: "Caixa de entrada" as Tab, tone: "warning" as const }] : []),
+    ...(overview.overdueReceivables.length ? [{ title: "Tratar recebimentos atrasados", description: "A Ana pode priorizar os clientes e preparar as cobranças.", value: currency(overdueReceivableTotal), tab: "Cobranças" as Tab, tone: "danger" as const }] : []),
+    ...(overview.overduePayables.length ? [{ title: "Revisar pagamentos vencidos", description: "Evite multas e interrupções de fornecedores.", value: currency(overduePayableTotal), tab: "Contas" as Tab, tone: "warning" as const }] : []),
+    { title: "Acompanhar os próximos 7 dias", description: "Confira entradas, saídas e o saldo projetado do período.", value: currency(overview.nextSeven.incoming - overview.nextSeven.outgoing), tab: "Agenda e caixa" as Tab, tone: "info" as const },
+  ].slice(0, 4);
 
   return (
     <section className="ana-workspace" data-tab={tab}>
-      <div className="ana-workspace-tabs">
-        {tabs.map((item) => (
+      <nav className="ana-area-tabs" aria-label="Áreas do financeiro">
+        {workspaceAreas.map((area) => {
+          const Icon = area.icon;
+          const active = area.id === activeArea.id;
+          return <button
+            key={area.id}
+            className={active ? "active" : ""}
+            onClick={() => setTab(area.tabs[0])}
+          >
+            <Icon size={17} />
+            <span><strong>{area.label}</strong><small>{area.description}</small></span>
+            {area.id === "documentos" && reviewCount > 0 && <i>{reviewCount}</i>}
+          </button>;
+        })}
+      </nav>
+
+      {activeArea.tabs.length > 1 && <div className="ana-workspace-tabs" aria-label={`Seções de ${activeArea.label}`}>
+        {activeArea.tabs.map((item) => (
           <button
             key={item}
             className={tab === item ? "active" : ""}
@@ -334,15 +391,28 @@ export function AnaFinanceWorkspace() {
             title={item}
           >
             {tabLabels[item]}
-            {item === "Caixa de entrada" && reviewCount > 0 && (
-              <i>{reviewCount}</i>
-            )}
           </button>
         ))}
-      </div>
+      </div>}
 
       {tab === "Visão geral" && (
         <div className="ana-panel-stack">
+          <section className="ana-command-center">
+            <div className="ana-command-identity">
+              <Avatar initials="AN" color="#8b5cf6" size="xl" status={ana?.status} />
+              <div>
+                <span className="eyebrow">Assistente administrativa e financeira</span>
+                <h2>Ana está cuidando da operação</h2>
+                <p>Documentos, vencimentos, cobranças e riscos reunidos em um só fluxo, sempre com aprovação humana nas ações sensíveis.</p>
+              </div>
+            </div>
+            <div className="ana-command-status">
+              <span><i /> {ana?.status ?? "disponível"}</span>
+              <strong>{priorityActions.length}</strong>
+              <small>prioridades no radar</small>
+            </div>
+          </section>
+
           <div className="ana-overview-grid">
             <article className="card">
               <small>Contas a pagar</small>
@@ -369,55 +439,30 @@ export function AnaFinanceWorkspace() {
               <span>ponto(s) de atenção</span>
             </article>
           </div>
-          <div
-            className={`ana-dropzone ${dragging ? "dragging" : ""}`}
-            onDragOver={(event) => {
-              event.preventDefault();
-              setDragging(true);
-            }}
-            onDragLeave={() => setDragging(false)}
-            onDrop={(event) => {
-              event.preventDefault();
-              setDragging(false);
-              void upload([...event.dataTransfer.files]);
-            }}
-            onClick={() => inputRef.current?.click()}
-          >
-            <input
-              ref={inputRef}
-              hidden
-              type="file"
-              multiple
-              accept=".pdf,image/*,.txt,.csv"
-              onChange={(event) => void upload([...(event.target.files ?? [])])}
-            />
-            <span>
-              <UploadCloud size={22} />
-            </span>
+
+          <section className="ana-priority-board">
+            <header><div><span className="eyebrow">Hoje</span><h2>O que precisa da sua atenção</h2></div><small>Ana priorizou por prazo, risco e impacto no caixa</small></header>
             <div>
-              <strong>
-                {processing
-                  ? "Ana está lendo os documentos..."
-                  : "Solte até 20 documentos aqui"}
-              </strong>
-              <p>
-                PDF com texto, imagens, TXT ou CSV · até 10 MB por arquivo ·
-                originais não são armazenados
-              </p>
+              {priorityActions.map((item) => <button type="button" onClick={() => setTab(item.tab)} key={item.title}>
+                <span className={`ana-priority-marker ${item.tone}`}><AlertTriangle size={15} /></span>
+                <span><strong>{item.title}</strong><small>{item.description}</small></span>
+                <b>{item.value}</b><ArrowRight size={14} />
+              </button>)}
             </div>
-            {processing ? (
-              <LoaderCircle className="ana-spin" size={19} />
-            ) : (
-              <Button
-                type="button"
-                variant="secondary"
-                disabled={backendEnabled}
-              >
-                <Paperclip size={13} />
-                Selecionar arquivos
-              </Button>
-            )}
-          </div>
+          </section>
+
+          <section className="ana-capability-section">
+            <header><div><span className="eyebrow">Mais que documentos</span><h2>Como a Ana ajuda o financeiro</h2></div></header>
+            <div className="ana-capability-grid">
+              {capabilities.map((item, index) => <button type="button" onClick={() => setTab(item.tab)} key={item.title}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <strong>{item.title}</strong>
+                <p>{item.description}</p>
+                <ArrowRight size={14} />
+              </button>)}
+            </div>
+          </section>
+
           {uploadResult && (
             <div className="card ana-upload-result">
               <div>
@@ -437,18 +482,28 @@ export function AnaFinanceWorkspace() {
           <div className="local-simulation-warning">
             <ShieldCheck size={16} />
             <div>
-              <strong>Gmail financeiro — próxima fase</strong>
-              <p>
-                A entrada OAuth está planejada, mas permanece desativada. Nenhum
-                e-mail é acessado nesta versão.
-              </p>
+              <strong>Google Workspace conectado ao seu fluxo</strong>
+              <p>Consulte Gmail e Calendário na CrewOS. Ações externas e automações financeiras continuam sob seu controle.</p>
             </div>
+            <Link href="/workspace">Abrir Workspace <ArrowRight size={13} /></Link>
           </div>
         </div>
       )}
 
       {tab === "Caixa de entrada" && (
         <div className="ana-panel-stack">
+          <div
+            className={`ana-dropzone ${dragging ? "dragging" : ""}`}
+            onDragOver={(event) => { event.preventDefault(); setDragging(true); }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={(event) => { event.preventDefault(); setDragging(false); void upload([...event.dataTransfer.files]); }}
+            onClick={() => inputRef.current?.click()}
+          >
+            <input ref={inputRef} hidden type="file" multiple accept=".pdf,image/*,.txt,.csv" onChange={(event) => void upload([...(event.target.files ?? [])])} />
+            <span><UploadCloud size={22} /></span>
+            <div><strong>{processing ? "Ana está lendo os documentos..." : "Envie documentos para a Ana"}</strong><p>Notas fiscais, boletos, recibos, comprovantes e extratos · PDF, imagens, TXT ou CSV</p></div>
+            {processing ? <LoaderCircle className="ana-spin" size={19} /> : <Button type="button" variant="secondary" disabled={backendEnabled}><Paperclip size={13} />Selecionar arquivos</Button>}
+          </div>
           <div className="ana-inbox-summary">
             <span>
               <Inbox size={16} />
@@ -1060,6 +1115,23 @@ export function AnaFinanceWorkspace() {
                       customerName: event.target.value,
                     })
                   }
+                />
+              </div>
+              <div className="field">
+                <label>E-mail de cobrança</label>
+                <input
+                  className="input"
+                  required
+                  type="email"
+                  autoComplete="email"
+                  value={receivableForm.customerEmail}
+                  onChange={(event) =>
+                    setReceivableForm({
+                      ...receivableForm,
+                      customerEmail: event.target.value,
+                    })
+                  }
+                  placeholder="financeiro@cliente.com.br"
                 />
               </div>
               <div className="field">

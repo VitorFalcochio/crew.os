@@ -1,0 +1,246 @@
+.settingsShell { min-height:650px; display:grid; grid-template-columns:220px minmax(0,1fr); gap:34px; align-items:start }
+.settingsNav { position:sticky; top:106px; display:flex; flex-direction:column; min-width:0; min-height:540px; padding:4px 24px 4px 0; border-right:1px solid var(--border) }
+.navIdentity { display:flex; align-items:center; gap:10px; padding:5px 8px 18px; border-bottom:1px solid var(--border) }
+.navIdentity>span { width:34px; height:34px; flex:0 0 34px; display:grid; place-items:center; border-radius:10px; color:#11140d; background:linear-gradient(145deg,#dfff55,#8acb52); font-size:9px; font-weight:850 }
+.navIdentity>div { min-width:0; display:grid; gap:3px }
+.navIdentity strong,.navIdentity small { overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.navIdentity strong { font-size:10px }
+.navIdentity small { color:var(--muted); font-size:8px }
+.settingsNav nav { display:grid; gap:4px; margin-top:14px }
+.settingsNav nav button { width:100%; min-height:48px; display:grid; grid-template-columns:20px minmax(0,1fr); align-items:center; gap:9px; padding:7px 9px; border:0; border-radius:9px; color:#858b84; background:transparent; text-align:left }
+.settingsNav nav button:hover { color:var(--text); background:rgba(255,255,255,.025) }
+.settingsNav nav button.active { color:var(--text); background:rgba(239,255,61,.075); box-shadow:inset 2px 0 var(--accent) }
+.settingsNav nav button.active>svg { color:var(--accent) }
+.settingsNav nav button span { min-width:0; display:grid; gap:3px }
+.settingsNav nav button strong { font-size:9px }
+.settingsNav nav button small { overflow:hidden; color:#697069; font-size:7px; text-overflow:ellipsis; white-space:nowrap }
+.navSecurity { display:flex; align-items:center; gap:8px; margin-top:auto; padding:13px 8px 3px; border-top:1px solid var(--border); color:#88a66b }
+.navSecurity span { display:grid; gap:2px }
+.navSecurity strong { font-size:8px }
+.navSecurity small { color:#626861; font-size:7px }
+.settingsContent { min-width:0 }
+.contentHeader { min-height:72px; display:flex; align-items:flex-start; justify-content:space-between; gap:20px; padding:3px 0 19px; margin-bottom:25px; border-bottom:1px solid var(--border) }
+.contentHeader>div span { color:#737a72; letter-spacing:.08em; text-transform:uppercase; font-size:7px; font-weight:750 }
+.contentHeader h2 { margin-top:5px; font-size:18px }
+.contentHeader>p { color:#9a8154; font-size:8px }
+.contentHeader>p.saved { color:#84b25e }
+.panelStack,.billingStack { display:grid; gap:30px }
+.sectionCard { border-bottom:1px solid var(--border) }
+.billingCard,.membersCard,.invoice { overflow:hidden; border:1px solid var(--border); border-radius:11px; background:rgba(0,0,0,.055) }
+.sectionCard>header { display:flex; align-items:center; gap:11px; padding:0 0 17px }
+.billingCard>header { display:flex; align-items:center; gap:11px; padding:15px 17px; border-bottom:1px solid var(--border) }
+.sectionCard>header>span,.billingCard>header>span { width:31px; height:31px; flex:0 0 31px; display:grid; place-items:center; border-radius:8px; color:var(--accent); background:rgba(239,255,61,.07) }
+.sectionCard>header>div,.billingCard>header>div { display:grid; gap:3px }
+.sectionCard h3,.billingCard h3,.membersCard h3 { font-size:11px }
+.sectionCard header p,.billingCard header p,.membersCard header p { color:var(--muted); font-size:8px }
+.sectionBody { padding:0 0 28px }
+.sectionCard.danger { border-color:rgba(239,68,68,.16) }
+.sectionCard.danger>header>span { color:#f87171; background:rgba(239,68,68,.07) }
+.accountDetails { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px }
+.accountDetails>div { display:grid; gap:6px; padding:13px; border:1px solid var(--border); border-radius:8px; background:rgba(255,255,255,.012) }
+.accountDetails small { color:var(--muted); font-size:7px }
+.accountDetails strong { overflow:hidden; font-size:9px; text-overflow:ellipsis; white-space:nowrap }
+.switches { display:grid }
+.switches label { min-height:60px; display:flex; align-items:center; justify-content:space-between; gap:18px; padding:9px 2px; border-bottom:1px solid rgba(255,255,255,.05) }
+.switches label:last-child { border-bottom:0 }
+.switches label>span { display:grid; gap:4px }
+.switches strong { font-size:9px }
+.switches small { color:var(--muted); font-size:8px }
+.switches input { width:34px; height:19px; accent-color:var(--accent) }
+.saveBar { min-height:68px; display:flex; align-items:center; justify-content:flex-end; gap:8px; padding:15px 0 0; margin-top:6px; border-top:1px solid var(--border) }
+.saveBar>span { margin-right:auto; color:var(--muted); font-size:8px }
+.integrationNotice { display:flex; align-items:center; gap:11px; padding:14px 16px; border:1px solid rgba(239,255,61,.13); border-radius:10px; background:rgba(239,255,61,.035) }
+.integrationNotice>span { width:31px; height:31px; display:grid; place-items:center; border-radius:8px; color:var(--accent); background:rgba(239,255,61,.08) }
+.integrationNotice>div { display:grid; gap:3px }
+.integrationNotice strong { font-size:9px }
+.integrationNotice p { color:var(--muted); font-size:8px }
+.integrationGrid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px }
+.integrationCard { min-width:0; display:grid; grid-template-columns:40px minmax(0,1fr) auto; align-items:center; gap:11px; padding:15px; border:1px solid var(--border); border-radius:10px; background:rgba(0,0,0,.075) }
+.integrationLogo { width:38px; height:38px; display:grid; place-items:center; border-radius:10px; color:var(--accent-light); background:var(--surface-3); font-size:9px; font-weight:800 }
+.integrationCard>div { min-width:0 }
+.integrationCard h3 { font-size:10px }
+.integrationCard p { overflow:hidden; margin-top:4px; color:var(--muted); font-size:8px; text-overflow:ellipsis; white-space:nowrap }
+.integrationCard small { display:block; margin-top:6px; color:#7fa65f; font-size:7px }
+.planHero { min-height:142px; display:flex; align-items:center; justify-content:space-between; gap:24px; padding:24px; overflow:hidden; border:1px solid rgba(239,255,61,.15); border-radius:12px; background:radial-gradient(circle at 85% 0,rgba(239,255,61,.11),transparent 40%),rgba(0,0,0,.08) }
+.planHero>div:first-child>span { display:flex; align-items:center; gap:6px; color:#91c56b; letter-spacing:.08em; text-transform:uppercase; font-size:7px; font-weight:750 }
+.planHero>div:first-child>span i { width:6px; height:6px; border-radius:50%; background:#86cf54; box-shadow:0 0 8px rgba(134,207,84,.6) }
+.planHero h2 { margin-top:9px; font-size:21px }
+.planHero p { margin-top:5px; color:var(--muted); font-size:9px }
+.planAmount { display:grid; justify-items:end; gap:3px }
+.planAmount strong { font-size:23px }
+.planAmount small { color:var(--muted); font-size:8px }
+.planAmount a { margin-top:8px; color:var(--accent-light); font-size:8px; font-weight:700 }
+.billingGrid { display:grid; grid-template-columns:1fr 1fr; gap:12px }
+.billRow { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:13px 17px; border-bottom:1px solid rgba(255,255,255,.045); font-size:9px }
+.billRow span { color:var(--muted) }
+.billRow.total { border-bottom:0; color:var(--accent-light); background:rgba(239,255,61,.025) }
+.billRow.total span { color:inherit; font-weight:700 }
+.paymentSummary { min-height:112px; display:grid; grid-template-columns:38px minmax(0,1fr) auto; align-items:center; gap:10px; padding:17px }
+.paymentSummary>svg { color:var(--accent) }
+.paymentSummary>div { display:grid; gap:4px }
+.paymentSummary strong { font-size:9px }
+.paymentSummary small { color:var(--muted); font-size:8px }
+.paymentForm { display:grid; gap:10px; padding:16px }
+.paymentForm>div:last-child { display:flex; justify-content:flex-end; gap:7px }
+.membersCard>header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:15px 17px; border-bottom:1px solid var(--border) }
+.membersCard>header>div { display:grid; gap:4px }
+.membersCard>header>span { color:var(--muted); font-size:8px }
+.membersCard>div { display:grid }
+.membersCard article { display:grid; grid-template-columns:30px minmax(0,1fr) auto 62px; align-items:center; gap:10px; min-height:54px; padding:9px 17px; border-bottom:1px solid rgba(255,255,255,.045) }
+.membersCard article:last-child { border-bottom:0 }
+.membersCard article>span { width:28px; height:28px; display:grid; place-items:center; border-radius:8px; color:var(--accent-light); background:var(--surface-3); font-size:7px; font-weight:750 }
+.membersCard article>div { display:grid; gap:3px }
+.membersCard article strong { font-size:9px }
+.membersCard article small,.membersCard article>p { color:var(--muted); font-size:7px }
+.membersCard article>i { display:flex; align-items:center; gap:4px; color:#78b956; font-size:7px; font-style:normal }
+.invoice { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:14px 17px }
+.invoice>div { display:grid; gap:4px }
+.invoice strong { font-size:9px }
+.invoice small { color:var(--muted); font-size:8px }
+
+@media (max-width:900px) {
+  .settingsShell { grid-template-columns:180px minmax(0,1fr); gap:24px }
+  .integrationGrid,.billingGrid { grid-template-columns:1fr }
+}
+
+@media (max-width:700px) {
+  .settingsShell { display:block }
+  .settingsNav { position:static; display:block; min-height:0; margin-bottom:24px; padding:0 0 10px; border-right:0; border-bottom:1px solid var(--border) }
+  .navIdentity,.navSecurity { display:none }
+  .settingsNav nav { display:flex; margin:0; overflow-x:auto }
+  .settingsNav nav button { min-width:max-content; grid-template-columns:16px auto; min-height:40px; padding:6px 10px }
+  .settingsNav nav button span { display:block }
+  .settingsNav nav button small { display:none }
+  .settingsNav nav button.active { box-shadow:inset 0 -2px var(--accent) }
+  .contentHeader { min-height:68px; padding:0 0 15px }
+  .panelStack,.billingStack { gap:22px }
+  .accountDetails { grid-template-columns:1fr }
+  .saveBar { flex-wrap:wrap; padding:12px 0 0 }
+  .saveBar>span { width:100%; margin:0 }
+  .integrationGrid { grid-template-columns:1fr }
+  .planHero { align-items:flex-start; padding:18px }
+  .planAmount strong { font-size:18px }
+}
+
+@media (max-width:480px) {
+  .integrationCard { grid-template-columns:38px minmax(0,1fr) auto }
+  .planHero { flex-direction:column }
+  .planAmount { justify-items:start }
+  .membersCard article { grid-template-columns:28px minmax(0,1fr) auto }
+  .membersCard article>p { display:none }
+}
+
+/* Readable product scale */
+.navIdentity strong { font-size:12px }
+.navIdentity small { font-size:10px }
+.settingsNav nav button strong { font-size:11px }
+.settingsNav nav button small { font-size:9px }
+.navSecurity strong { font-size:10px }
+.navSecurity small { font-size:9px }
+.contentHeader>div span { font-size:9px }
+.contentHeader h2 { font-size:22px }
+.contentHeader>p { font-size:10px }
+.sectionCard h3,.billingCard h3,.membersCard h3 { font-size:14px }
+.sectionCard header p,.billingCard header p,.membersCard header p { font-size:10px; line-height:1.5 }
+.accountDetails small { font-size:9px }
+.accountDetails strong { font-size:11px }
+.switches strong { font-size:11px }
+.switches small { font-size:10px }
+.saveBar>span { font-size:10px }
+.integrationNotice strong { font-size:11px }
+.integrationNotice p { font-size:10px; line-height:1.5 }
+.integrationCard h3 { font-size:12px }
+.integrationCard p { font-size:10px }
+.integrationCard small { font-size:9px }
+.planHero>div:first-child>span { font-size:9px }
+.planHero p { font-size:11px }
+.planAmount small,.planAmount a { font-size:10px }
+.billRow { font-size:11px }
+.paymentSummary strong { font-size:11px }
+.paymentSummary small { font-size:10px }
+.membersCard>header>span { font-size:10px }
+.membersCard article strong { font-size:11px }
+.membersCard article small,.membersCard article>p,.membersCard article>i { font-size:9px }
+.invoice strong { font-size:11px }
+.invoice small { font-size:10px }
+
+/* Professional product scale */
+.settingsShell { grid-template-columns:240px minmax(0,1fr); gap:42px }
+.settingsNav { min-height:590px; padding-right:28px }
+.navIdentity { gap:12px; padding:8px 10px 22px }
+.navIdentity>span { width:39px; height:39px; flex-basis:39px; font-size:11px }
+.navIdentity strong { font-size:13px }
+.navIdentity small { font-size:10px }
+.settingsNav nav { gap:5px; margin-top:18px }
+.settingsNav nav button { min-height:56px; grid-template-columns:22px minmax(0,1fr); gap:11px; padding:9px 11px }
+.settingsNav nav button strong { font-size:12px }
+.settingsNav nav button small { font-size:10px }
+.navSecurity { padding:17px 10px 5px }
+.navSecurity strong { font-size:11px }
+.navSecurity small { font-size:10px }
+.contentHeader { min-height:84px; margin-bottom:31px; padding-bottom:23px }
+.contentHeader>div span { font-size:10px }
+.contentHeader h2 { margin-top:7px; font-size:24px }
+.contentHeader>p { font-size:10px }
+.panelStack,.billingStack { gap:34px }
+.sectionCard>header { padding-bottom:20px }
+.billingCard>header,.membersCard>header { padding:19px 20px }
+.sectionCard>header>span,.billingCard>header>span { width:36px; height:36px; flex-basis:36px }
+.sectionCard h3,.billingCard h3,.membersCard h3 { font-size:15px }
+.sectionCard header p,.billingCard header p,.membersCard header p { margin-top:2px; font-size:11px }
+.sectionBody { padding-bottom:34px }
+.accountDetails>div { min-height:76px; padding:16px }
+.accountDetails small { font-size:10px }
+.accountDetails strong { font-size:12px }
+.switches label { min-height:70px; padding:12px 3px }
+.switches strong { font-size:12px }
+.switches small { font-size:10px; line-height:1.5 }
+.integrationNotice { min-height:72px; padding:16px 18px }
+.integrationNotice strong { font-size:12px }
+.integrationNotice p { font-size:10px }
+.integrationCard { min-height:82px; grid-template-columns:46px minmax(0,1fr) auto; padding:17px }
+.integrationLogo { width:43px; height:43px }
+.integrationCard h3 { font-size:13px }
+.integrationCard p { font-size:10px }
+.integrationCard small { font-size:9px }
+.billingCard,.membersCard,.invoice,.integrationCard { background:var(--surface) }
+.billRow { min-height:49px; padding:14px 20px; font-size:11px }
+.paymentSummary { min-height:124px; padding:20px }
+.paymentSummary strong { font-size:12px }
+.membersCard article { min-height:66px; padding:12px 20px }
+.membersCard article strong { font-size:12px }
+.membersCard article small,.membersCard article>p,.membersCard article>i { font-size:10px }
+.invoice { min-height:68px; padding:16px 20px }
+.invoice strong { font-size:12px }
+
+@media (max-width:900px) {
+  .settingsShell { grid-template-columns:200px minmax(0,1fr); gap:28px }
+}
+
+@media (max-width:700px) {
+  .settingsShell { display:block }
+  .settingsNav nav button { min-height:44px }
+}
+
+:global(html[data-theme="light"]) .settingsNav { border-color:rgba(31,36,27,.12) }
+:global(html[data-theme="light"]) .navIdentity,
+:global(html[data-theme="light"]) .navSecurity,
+:global(html[data-theme="light"]) .contentHeader,
+:global(html[data-theme="light"]) .sectionCard { border-color:rgba(31,36,27,.12) }
+:global(html[data-theme="light"]) .settingsNav nav button { color:#626960 }
+:global(html[data-theme="light"]) .settingsNav nav button:hover { color:#171914; background:rgba(31,36,27,.035) }
+:global(html[data-theme="light"]) .settingsNav nav button.active { color:#171914; background:rgba(223,242,46,.2) }
+:global(html[data-theme="light"]) .settingsNav nav button small { color:#747b70 }
+:global(html[data-theme="light"]) .navSecurity { color:#5e6b00 }
+:global(html[data-theme="light"]) .navSecurity small { color:#737a70 }
+:global(html[data-theme="light"]) .billingCard,
+:global(html[data-theme="light"]) .membersCard,
+:global(html[data-theme="light"]) .invoice,
+:global(html[data-theme="light"]) .integrationCard { background:#fff; border-color:rgba(31,36,27,.12) }
+:global(html[data-theme="light"]) .accountDetails>div { background:#f7f8f3; border-color:rgba(31,36,27,.11) }
+:global(html[data-theme="light"]) .switches label,
+:global(html[data-theme="light"]) .membersCard article,
+:global(html[data-theme="light"]) .billRow { border-color:rgba(31,36,27,.085) }
+:global(html[data-theme="light"]) .integrationNotice { background:rgba(223,242,46,.13); border-color:rgba(130,146,0,.2) }
+:global(html[data-theme="light"]) .planHero { background:radial-gradient(circle at 85% 0,rgba(223,242,46,.22),transparent 40%),#fff; border-color:rgba(130,146,0,.22) }
+:global(html[data-theme="light"]) .billRow.total { color:#566300; background:rgba(223,242,46,.11) }

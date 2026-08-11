@@ -58,8 +58,8 @@ const catalogs: Record<string, EmployeeCapabilityCatalog> = {
   sofia: {
     summary: "Sofia organiza o atendimento, responde casos seguros e encaminha exceções com todo o contexto.",
     capabilities: [
-      { key: "triage", title: "Fazer triagem", description: "Classifica mensagens por assunto, urgência e sentimento.", stage: "planned", actions: ["Identificar intenção", "Definir prioridade", "Encaminhar responsável"] },
-      { key: "answer", title: "Responder dúvidas frequentes", description: "Produz respostas consistentes com as políticas e o tom da empresa.", stage: "planned", actions: ["Consultar base de conhecimento", "Preparar resposta", "Pedir revisão quando necessário"] },
+      { key: "triage", title: "Fazer triagem", description: "Classifica mensagens por assunto, urgência e sentimento.", stage: "validation", actions: ["Identificar intenção", "Definir prioridade", "Encaminhar responsável"], href: "/atendimento" },
+      { key: "answer", title: "Responder dúvidas frequentes", description: "Produz respostas consistentes com as políticas e o tom da empresa.", stage: "validation", actions: ["Consultar base de conhecimento", "Preparar resposta", "Pedir revisão quando necessário"], href: "/atendimento" },
       { key: "sla", title: "Acompanhar SLA", description: "Monitora conversas sem resposta e evita que solicitações sejam esquecidas.", stage: "planned", actions: ["Controlar prazo", "Alertar atrasos", "Escalar casos críticos"] },
       { key: "insights", title: "Encontrar causas recorrentes", description: "Agrupa reclamações e dúvidas para revelar oportunidades de melhoria.", stage: "planned", actions: ["Agrupar temas", "Medir recorrência", "Criar resumo de causas"] },
     ],
@@ -76,9 +76,9 @@ const catalogs: Record<string, EmployeeCapabilityCatalog> = {
   lucas: {
     summary: "Lucas mantém o funil comercial atualizado e conduz cada oportunidade ao próximo passo adequado.",
     capabilities: [
-      { key: "qualification", title: "Qualificar leads", description: "Organiza informações e avalia aderência, momento e potencial.", stage: "planned", actions: ["Coletar contexto", "Aplicar critérios", "Priorizar oportunidades"] },
-      { key: "follow-up", title: "Preparar follow-ups", description: "Sugere contatos relevantes com base no histórico da oportunidade.", stage: "planned", actions: ["Detectar leads parados", "Redigir mensagem", "Agendar próximo passo"] },
-      { key: "pipeline", title: "Manter o pipeline", description: "Atualiza etapas e sinaliza negócios sem avanço ou informação.", stage: "planned", actions: ["Revisar etapas", "Encontrar gargalos", "Alertar riscos"] },
+      { key: "qualification", title: "Qualificar leads", description: "Organiza informações e avalia aderência, momento e potencial.", stage: "validation", actions: ["Coletar contexto", "Aplicar critérios", "Priorizar oportunidades"], href: "/comercial" },
+      { key: "follow-up", title: "Preparar follow-ups", description: "Sugere contatos relevantes com base no histórico da oportunidade.", stage: "validation", actions: ["Detectar leads parados", "Redigir mensagem", "Agendar próximo passo"], href: "/comercial" },
+      { key: "pipeline", title: "Manter o pipeline", description: "Atualiza etapas e sinaliza negócios sem avanço ou informação.", stage: "validation", actions: ["Revisar etapas", "Encontrar gargalos", "Alertar riscos"], href: "/comercial" },
       { key: "proposal", title: "Preparar propostas", description: "Monta uma proposta a partir do diagnóstico e das condições autorizadas.", stage: "planned", actions: ["Consolidar escopo", "Aplicar condições", "Solicitar aprovação"] },
     ],
   },

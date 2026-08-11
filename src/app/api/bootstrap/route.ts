@@ -10,7 +10,7 @@ export async function GET() {
       supabase.from("tasks").select("*").eq("organization_id", organizationId).order("created_at", { ascending: false }).limit(100),
       supabase.from("approvals").select("*").eq("organization_id", organizationId).order("requested_at", { ascending: false }).limit(100),
       supabase.from("activities").select("*").eq("organization_id", organizationId).order("created_at", { ascending: false }).limit(100),
-      supabase.from("integrations").select("id,provider,status,configuration,connected_at").eq("organization_id", organizationId),
+      supabase.from("integrations").select("id,provider,status,configuration,connected_at,capabilities,last_sync_at,health").eq("organization_id", organizationId),
       supabase.from("subscriptions").select("*").eq("organization_id", organizationId).maybeSingle(),
       supabase.from("profiles").select("full_name,avatar_url").eq("id", user.id).maybeSingle(),
     ]);

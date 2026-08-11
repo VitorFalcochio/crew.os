@@ -22,7 +22,7 @@ export default function TeamPage() {
     { value: "aguardando aprovação", label: `Aguardando aprovação · ${hired.filter((employee) => employee.status === "aguardando aprovação").length}` },
     { value: "disponível", label: `Disponíveis · ${hired.filter((employee) => employee.status === "disponível").length}` },
   ];
-  return <><PageHeader eyebrow="Minha Equipe" title="Sua força de trabalho digital" description={`${hired.length} especialistas cuidando da operação da ${account.organization}.`} action={<Link href="/store"><Button><Plus size={15} />Contratar funcionário</Button></Link>} />
+  return <><PageHeader eyebrow="Minha Equipe" title="Sua força de trabalho digital" description={`${hired.length} especialistas cuidando da operação da ${account.organization}. Abra um perfil para ajustar tarefas, ferramentas e permissões.`} action={<Link href="/store"><Button><Plus size={15} />Contratar funcionário</Button></Link>} />
     <div className="filters">{filters.map((item) => <button key={item.value} className={`filter ${filter === item.value ? "active" : ""}`} onClick={() => setFilter(item.value)}>{item.label}</button>)}</div>
     {filtered.length ? <section className="employee-grid">{filtered.map((employee) => <EmployeeCard key={employee.id} employee={employee} />)}</section> : <article className="card"><EmptyState title="Nenhum funcionário neste estado" description="Escolha outro filtro ou delegue uma nova tarefa à equipe." /></article>}
   </>;

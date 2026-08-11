@@ -3,27 +3,28 @@
 import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, BadgeCheck, BookOpen, BrainCircuit, Building2, ChevronDown, ChevronLeft, ChevronRight, CreditCard, LayoutDashboard, LogOut, PackageSearch, Plug, ReceiptText, Repeat2, Settings, ShieldCheck, ShoppingBag, UsersRound } from "lucide-react";
+import { Activity, BadgeCheck, BookOpen, BrainCircuit, Building2, ChevronDown, ChevronLeft, ChevronRight, Headphones, LayoutDashboard, LogOut, PackageSearch, PanelsTopLeft, ReceiptText, Repeat2, Settings, ShoppingBag, TrendingUp, UsersRound } from "lucide-react";
 import { Logo } from "./logo";
 import { Avatar } from "@/components/ui/avatar";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { useDemo } from "@/features/demo/demo-provider";
 import { logout } from "@/features/auth/actions";
 
 const navigation = [
   { href: "/central", label: "Central", icon: LayoutDashboard },
+  { href: "/workspace", label: "Workspace", icon: PanelsTopLeft },
   { href: "/diretor", label: "Diretor", icon: BrainCircuit },
   { href: "/equipe", label: "Minha Equipe", icon: UsersRound },
   { href: "/financeiro", label: "Financeiro", icon: ReceiptText },
   { href: "/compras", label: "Compras", icon: PackageSearch },
+  { href: "/atendimento", label: "Atendimento", icon: Headphones },
+  { href: "/comercial", label: "Comercial", icon: TrendingUp },
   { href: "/delegacoes", label: "Delegações", icon: Building2 },
   { href: "/rotinas", label: "Rotinas", icon: Repeat2 },
   { href: "/aprovacoes", label: "Aprovações", icon: BadgeCheck, approvals: true },
   { href: "/atividades", label: "Atividades", icon: Activity },
   { href: "/briefing", label: "Crew Briefing", icon: BookOpen },
-  { href: "/autonomia", label: "Autonomia", icon: ShieldCheck },
   { href: "/store", label: "Crew Store", icon: ShoppingBag },
-  { href: "/integracoes", label: "Integrações", icon: Plug },
-  { href: "/assinatura", label: "Assinatura", icon: CreditCard },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
 ];
 
@@ -69,7 +70,6 @@ export function Sidebar() {
   }
 
   const pending = approvals.filter((approval) => approval.status === "pendente").length;
-  const hired = employees.filter((employee) => employee.hired).length;
   return (
     <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
       <div className="sidebar-top">
@@ -111,10 +111,7 @@ export function Sidebar() {
         ))}
       </nav>
       <div className="sidebar-bottom">
-        <div className="capacity">
-          <div className="capacity-row"><span>Equipe digital</span><strong>{hired}/6</strong></div>
-          <div className="progress"><span style={{ width: `${Math.min(100, hired / 6 * 100)}%` }} /></div>
-        </div>
+        <ThemeToggle />
         <div className="user-menu">
           <span className="user-dot">{account.name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase()}</span>
           <div className="user-details"><strong>{account.name}</strong><small>{account.organization}</small></div>

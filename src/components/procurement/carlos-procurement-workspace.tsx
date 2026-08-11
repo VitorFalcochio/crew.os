@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import {
   ArrowRight,
   BadgeCheck,
@@ -10,15 +11,20 @@ import {
   Plus,
   Scale,
   Store,
+  UploadCloud,
+  Users,
 } from "lucide-react";
 import { useDemo } from "@/features/demo/demo-provider";
 import { Button } from "@/components/ui/button";
 import { currency } from "@/lib/utils";
+import { parseSupplierCsv } from "@/features/procurement/supplier-import";
 
-type ProcurementTab = "Visão" | "Requisições" | "Cotações";
+type ProcurementTab = "Visão" | "Requisições" | "Fornecedores" | "Cotações";
 
 const statusLabels = {
   quoting: "Em cotação",
+  requesting_quotes: "Aguardando aprovação",
+  quotes_requested: "Solicitações enviadas",
   recommended: "Recomendação pronta",
   awaiting_approval: "Aguardando aprovação",
   approved: "Aprovada",
@@ -30,13 +36,19 @@ export function CarlosProcurementWorkspace() {
     employees,
     procurementRequests,
     supplierQuotes,
+    suppliers,
     approvals,
     hireEmployee,
     createProcurementRequest,
-    analyzeProcurementRequest,
+    addSupplier,
+    importSuppliers,
+    requestSupplierQuotes,
   } = useDemo();
   const [tab, setTab] = useState<ProcurementTab>("Visão");
   const [showForm, setShowForm] = useState(false);
+  const [showSupplierForm, setShowSupplierForm] = useState(false);
+  const [importMessage, setImportMessage] = useState("");
+  const csvInputRef = useRef<HTMLInputElement>(null);
   const carlos = employees.find((employee) => employee.id === "carlos")!;
   const pendingApprovals = approvals.filter(
     (approval) =>
@@ -47,12 +59,6 @@ export function CarlosProcurementWorkspace() {
       (item) => item.id === request.recommendedQuoteId,
     );
     return sum + (quote?.total ?? 0);
-  }, 0);
-  const estimatedSavings = procurementRequests.reduce((sum, request) => {
-    const quote = supplierQuotes.find(
-      (item) => item.id === request.recommendedQuoteId,
-    );
-    return sum + Math.max(0, request.budget - (quote?.total ?? request.budget));
   }, 0);
   const quotesByRequest = useMemo(
     () =>
@@ -68,6 +74,8 @@ export function CarlosProcurementWorkspace() {
   function submitRequest(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    const supplierIds = form.getAll("supplierIds").map(String);
+    if (!supplierIds.length) { toast.error("Selecione pelo menos um fornecedor para cotar"); return; }
     const created = createProcurementRequest({
       title: String(form.get("title") ?? ""),
       category: String(form.get("category") ?? ""),
@@ -76,12 +84,26 @@ export function CarlosProcurementWorkspace() {
       neededBy: String(form.get("neededBy") ?? ""),
       project: String(form.get("project") ?? ""),
       notes: String(form.get("notes") ?? ""),
+      supplierIds,
     });
     if (created) {
       event.currentTarget.reset();
       setShowForm(false);
       setTab("Requisições");
     }
+  }
+
+  function submitSupplier(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault(); const form = new FormData(event.currentTarget);
+    const created = addSupplier({ name: String(form.get("name") ?? ""), email: String(form.get("email") ?? ""), taxId: String(form.get("taxId") ?? "") || undefined, categories: String(form.get("categories") ?? "").split(",").map((item) => item.trim()).filter(Boolean), notes: String(form.get("notes") ?? "") });
+    if (created) { event.currentTarget.reset(); setShowSupplierForm(false); }
+  }
+
+  async function importCsv(file?: File) {
+    if (!file) return;
+    try { const parsed = parseSupplierCsv(await file.text()); const result = importSuppliers(parsed.suppliers); setImportMessage(`${result.created} fornecedor(es) importado(s), ${result.duplicates} duplicado(s) ignorado(s)${parsed.errors.length ? ` e ${parsed.errors.length} linha(s) inválida(s)` : ""}.`); }
+    catch (error) { setImportMessage(error instanceof Error ? error.message : "Não foi possível importar o CSV"); }
+    if (csvInputRef.current) csvInputRef.current.value = "";
   }
 
   if (!carlos.hired) {
@@ -101,7 +123,7 @@ export function CarlosProcurementWorkspace() {
   return (
     <section className="procurement-workspace" data-tab={tab}>
       <nav className="procurement-tabs" aria-label="Áreas de Compras">
-        {(["Visão", "Requisições", "Cotações"] as ProcurementTab[]).map(
+        {(["Visão", "Requisições", "Fornecedores", "Cotações"] as ProcurementTab[]).map(
           (item) => (
             <button
               className={tab === item ? "active" : ""}
@@ -120,7 +142,7 @@ export function CarlosProcurementWorkspace() {
             <article><ClipboardList size={17} /><span>Requisições<strong>{procurementRequests.length}</strong></span></article>
             <article><Scale size={17} /><span>Valor recomendado<strong>{currency(quotedTotal)}</strong></span></article>
             <article><BadgeCheck size={17} /><span>Aguardando decisão<strong>{pendingApprovals}</strong></span></article>
-            <article><Store size={17} /><span>Economia estimada<strong>{currency(estimatedSavings)}</strong></span></article>
+            <article><Store size={17} /><span>Fornecedores<strong>{suppliers.length}</strong></span></article>
           </div>
           <div className="procurement-primary-action">
             <div>
@@ -160,9 +182,11 @@ export function CarlosProcurementWorkspace() {
                     <td><span className={`procurement-status ${request.status}`}>{statusLabels[request.status]}</span></td>
                     <td>
                       {request.status === "quoting" ? (
-                        <Button size="sm" onClick={() => { analyzeProcurementRequest(request.id); setTab("Cotações"); }}>Comparar</Button>
+                        <Button size="sm" onClick={() => { void requestSupplierQuotes(request.id); }}>Solicitar cotações</Button>
                       ) : request.status === "awaiting_approval" ? (
                         <Link className="procurement-link" href="/aprovacoes">Decidir <ArrowRight size={13} /></Link>
+                      ) : request.status === "requesting_quotes" ? (
+                        <Link className="procurement-link" href="/aprovacoes">Revisar envios <ArrowRight size={13} /></Link>
                       ) : (
                         <button className="procurement-link" onClick={() => setTab("Cotações")}>Ver análise</button>
                       )}
@@ -173,6 +197,31 @@ export function CarlosProcurementWorkspace() {
             </table>
             {!procurementRequests.length && <div className="procurement-empty">Nenhuma requisição cadastrada.</div>}
           </div>
+        </div>
+      )}
+
+      {tab === "Fornecedores" && (
+        <div className="procurement-stack">
+          <div className="procurement-section-head">
+            <div><h2>Base de fornecedores</h2><p>Cadastre manualmente ou importe um CSV com as colunas nome e email.</p></div>
+            <div className="form-actions">
+              <input ref={csvInputRef} hidden type="file" accept=".csv,text/csv" onChange={(event) => void importCsv(event.target.files?.[0])} />
+              <Button size="sm" variant="ghost" onClick={() => csvInputRef.current?.click()}><UploadCloud size={14} />Importar CSV</Button>
+              <Button size="sm" onClick={() => setShowSupplierForm((value) => !value)}><Plus size={14} />Cadastrar</Button>
+            </div>
+          </div>
+          {importMessage && <div className="local-mode-notice"><strong>Importação concluída</strong><span>{importMessage}</span></div>}
+          {showSupplierForm && <form className="card card-pad" onSubmit={submitSupplier}>
+            <div className="form-grid">
+              <div className="field"><label>Nome do fornecedor</label><input className="input" name="name" required /></div>
+              <div className="field"><label>E-mail comercial</label><input className="input" name="email" type="email" required /></div>
+              <div className="field"><label>CNPJ ou documento</label><input className="input" name="taxId" /></div>
+              <div className="field"><label>Categorias</label><input className="input" name="categories" placeholder="Cimento, aço, elétrica" /></div>
+              <div className="field full"><label>Observações</label><textarea className="textarea" name="notes" /></div>
+            </div>
+            <div className="form-actions"><Button type="button" variant="ghost" onClick={() => setShowSupplierForm(false)}>Cancelar</Button><Button type="submit">Salvar fornecedor</Button></div>
+          </form>}
+          <div className="table-wrap table-surface"><table className="data-table procurement-table"><thead><tr><th>Fornecedor</th><th>E-mail</th><th>Categorias</th><th>Origem</th></tr></thead><tbody>{suppliers.map((supplier) => <tr key={supplier.id}><td><strong>{supplier.name}</strong>{supplier.taxId && <div className="muted">{supplier.taxId}</div>}</td><td>{supplier.email}</td><td>{supplier.categories.join(", ") || "—"}</td><td>{supplier.source === "csv" ? "CSV" : "Manual"}</td></tr>)}</tbody></table>{!suppliers.length && <div className="procurement-empty"><Users size={18} /><p>Nenhum fornecedor cadastrado.</p></div>}</div>
         </div>
       )}
 
@@ -211,8 +260,13 @@ export function CarlosProcurementWorkspace() {
               <div className="field"><label>Orçamento máximo</label><input className="input" name="budget" type="number" min="1" step="0.01" required /></div>
               <div className="field"><label>Necessário até</label><input className="input" name="neededBy" type="date" required /></div>
               <div className="field full"><label>Observações</label><textarea className="textarea" name="notes" placeholder="Marca preferida, especificações ou restrições..." /></div>
+              <fieldset className="field full procurement-supplier-picker">
+                <legend>Fornecedores para cotar</legend>
+                {suppliers.map((supplier) => <label key={supplier.id}><input type="checkbox" name="supplierIds" value={supplier.id} /><span><strong>{supplier.name}</strong><small>{supplier.email}</small></span></label>)}
+                {!suppliers.length && <p>Cadastre fornecedores antes de criar a requisição.</p>}
+              </fieldset>
             </div>
-            <footer><Button type="button" variant="ghost" onClick={() => setShowForm(false)}>Cancelar</Button><Button type="submit">Enviar ao Carlos</Button></footer>
+            <footer><Button type="button" variant="ghost" onClick={() => setShowForm(false)}>Cancelar</Button><Button type="submit" disabled={!suppliers.length}>Enviar ao Carlos</Button></footer>
           </form>
         </div>
       )}

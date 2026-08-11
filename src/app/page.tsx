@@ -7,7 +7,6 @@ import {
   Bot,
   BrainCircuit,
   Check,
-  Clock3,
   FileCheck2,
   Network,
   Play,
@@ -18,6 +17,16 @@ import {
 import { Logo } from "@/components/layout/logo";
 import styles from "./landing-hero.module.css";
 import experience from "./landing-experience.module.css";
+import dropboxLogo from "../../assets/integrations/dropbox.png";
+import contaAzulLogo from "../../assets/integrations/contaazul.jpg";
+import gmailLogo from "../../assets/integrations/gmail.svg";
+import googleDriveLogo from "../../assets/integrations/googledrive.png";
+import googleSheetsLogo from "../../assets/integrations/googlesheets.png";
+import microsoftTeamsLogo from "../../assets/integrations/microsoftteams.svg";
+import omieLogo from "../../assets/integrations/omie.png";
+import oneDriveLogo from "../../assets/integrations/onedrive.svg";
+import outlookLogo from "../../assets/integrations/outlook.png";
+import slackLogo from "../../assets/integrations/slack.png";
 
 const employees = [
   { name: "Ana", image: "/employees/ana.png", department: "Financeiro", description: "Organiza documentos, acompanha o caixa e prepara cobranças." },
@@ -35,11 +44,30 @@ const steps = [
   ["03", "Delegue o resultado", "Diga o que precisa acontecer. A CrewOS planeja, executa e presta contas."],
 ];
 
+const integrations = [
+  { name: "Gmail", category: "E-mail", logo: gmailLogo },
+  { name: "Google Drive", category: "Arquivos", logo: googleDriveLogo },
+  { name: "Google Calendar", category: "Agenda", initials: "GC" },
+  { name: "Google Sheets", category: "Planilhas", logo: googleSheetsLogo },
+  { name: "WhatsApp", category: "Comunicação", initials: "WA" },
+  { name: "Conta Azul", category: "Financeiro", logo: contaAzulLogo },
+  { name: "Omie", category: "ERP", logo: omieLogo },
+  { name: "Asaas", category: "Financeiro", initials: "AS" },
+  { name: "HubSpot", category: "CRM", initials: "HS" },
+  { name: "Slack", category: "Colaboração", logo: slackLogo },
+  { name: "Microsoft Teams", category: "Colaboração", logo: microsoftTeamsLogo },
+  { name: "Outlook", category: "E-mail", logo: outlookLogo },
+  { name: "OneDrive", category: "Arquivos", logo: oneDriveLogo },
+  { name: "Dropbox", category: "Arquivos", logo: dropboxLogo },
+];
+
+const integrationTracks = [integrations.slice(0, 7), integrations.slice(7)];
+
 export default function Home() {
   return <main className="landing-page">
     <header className="landing-nav">
       <Link href="/" className="landing-logo" aria-label="CrewOS — página inicial"><Logo /></Link>
-      <nav aria-label="Navegação principal"><a href="#produto">Produto</a><a href="#equipe">Equipe digital</a><a href="#como-funciona">Como funciona</a></nav>
+      <nav aria-label="Navegação principal"><a href="#produto">Produto</a><a href="#equipe">Equipe digital</a><a href="#integracoes">Integrações</a><a href="#como-funciona">Como funciona</a></nav>
       <div className="landing-nav-actions"><Link href="/login">Entrar</Link><Link href="/cadastro" className="landing-nav-cta">Começar agora <ArrowRight size={13} /></Link></div>
     </header>
 
@@ -59,9 +87,6 @@ export default function Home() {
         <div className="landing-robot-glow" />
         <Image src="/crewos-humanoide.png" alt="Funcionário digital humanoide da CrewOS usando uniforme amarelo" width={1024} height={1536} priority sizes="(max-width: 700px) 92vw, 660px" />
       </div>
-
-      <div className="landing-float-card landing-float-left"><span><Network size={15} /></span><div><strong>5 funcionários</strong><small>trabalhando agora</small></div><i /></div>
-      <div className="landing-float-card landing-float-right"><span><Clock3 size={15} /></span><div><strong>Operação 24/7</strong><small>sem perder contexto</small></div></div>
 
       <div className="landing-scroll"><span>Descubra</span><i /></div>
     </section>
@@ -140,8 +165,41 @@ export default function Home() {
       </div>
     </section>
 
+    <section className={experience.integrations} id="integracoes">
+      <div className={experience.integrationsInner}>
+        <div className={experience.integrationsHeading}>
+          <div><span>04 · INTEGRAÇÕES</span><h2>Trabalhe com as ferramentas<br />que sua empresa <em>já usa.</em></h2></div>
+          <p>Conecte comunicação, arquivos, agenda, financeiro e CRM. Sua equipe digital acessa cada plataforma por uma camada segura, com permissões e controle humano.</p>
+        </div>
+        <div className={experience.integrationStage}>
+          <div className={experience.integrationTrackViewport}>
+            <div className={`${experience.integrationTrack} ${experience.trackForward}`}>
+              {[...integrationTracks[0], ...integrationTracks[0]].map((integration, index) => (
+                <article key={`${integration.name}-${index}`} aria-hidden={index >= integrationTracks[0].length || undefined}>
+                  <div className={experience.integrationLogo}>{integration.logo ? <Image src={integration.logo} alt={index < integrationTracks[0].length ? `Logo ${integration.name}` : ""} sizes="44px" /> : <span>{integration.initials}</span>}</div>
+                  <div><small>{integration.category}</small><h3>{integration.name}</h3></div><i aria-hidden="true" />
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className={experience.integrationTrackViewport}>
+            <div className={`${experience.integrationTrack} ${experience.trackReverse}`}>
+              {[...integrationTracks[1], ...integrationTracks[1]].map((integration, index) => (
+                <article key={`${integration.name}-${index}`} aria-hidden={index >= integrationTracks[1].length || undefined}>
+                  <div className={experience.integrationLogo}>{integration.logo ? <Image src={integration.logo} alt={index < integrationTracks[1].length ? `Logo ${integration.name}` : ""} sizes="44px" /> : <span>{integration.initials}</span>}</div>
+                  <div><small>{integration.category}</small><h3>{integration.name}</h3></div><i aria-hidden="true" />
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+        <footer className={experience.integrationsFooter}><ShieldCheck size={14} /><span>Credenciais protegidas. Cada funcionário acessa somente as ações que você autorizar.</span><Link href="/cadastro">Quero integrar minha empresa <ArrowRight size={14} /></Link></footer>
+      </div>
+    </section>
+
     <section className={experience.how} id="como-funciona">
-      <div className={experience.sectionIntro}><span>04 · COMO COMEÇAR</span><h2>Da configuração ao resultado,<br />sem <em>complexidade.</em></h2></div>
+      <div className={experience.sectionIntro}><span>05 · COMO COMEÇAR</span><h2>Da configuração ao resultado,<br />sem <em>complexidade.</em></h2></div>
       <div className={experience.steps}>{steps.map(([number, title, description]) => <article key={number}><span>{number}</span><div><h3>{title}</h3><p>{description}</p></div><ArrowRight size={18} /></article>)}</div>
     </section>
 

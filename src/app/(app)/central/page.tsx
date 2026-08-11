@@ -137,7 +137,7 @@ export default function CentralPage() {
             <div className="crew-approval-meta">{employee && <Avatar initials={employee.initials} color={employee.color} size="sm" />}<span><strong>{employee?.name}</strong><small>{approval.requestedAt}</small></span></div>
             <h3>{approval.title}</h3><p>{approval.impact}</p>
             {approval.amount && <div className="crew-approval-value"><span>Valor envolvido</span><strong>{currency(approval.amount)}</strong></div>}
-            <div className="crew-approval-actions"><Link href="/aprovacoes">Revisar</Link><button onClick={() => resolveApproval(approval.id, "aprovada")}><Check size={13} /> Aprovar</button></div>
+            <div className="crew-approval-actions"><Link href="/aprovacoes">Revisar</Link>{!approval.externalActionId && <button onClick={() => resolveApproval(approval.id, "aprovada")}><Check size={13} /> Aprovar</button>}</div>
           </div>;
         })}</div> : <div className="crew-clear-state"><BadgeCheck size={22} /><strong>Tudo em dia</strong><p>Nenhuma decisão aguardando você.</p></div>}
         <Link href="/aprovacoes" className="crew-panel-footer">Ver todas as aprovações <ArrowRight size={13} /></Link>

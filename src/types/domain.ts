@@ -49,6 +49,13 @@ export interface Approval {
   status: "pendente" | "aprovada" | "recusada" | "ajuste solicitado";
   amount?: number;
   relatedAccountIds?: string[];
+  externalActionId?: string;
+  externalActionKind?: "collection" | "supplier_quote_request" | "support_reply" | "sales_followup";
+  externalActionStatus?: CollectionEmailActionStatus;
+  externalError?: string;
+  externalMessageId?: string;
+  externalThreadId?: string;
+  externalSentAt?: string;
   relatedPurchaseRequestId?: string;
   requestedAt: string;
 }
@@ -65,16 +72,22 @@ export interface Activity {
 
 export interface Integration {
   id: string;
+  provider?: string;
   name: string;
   description: string;
   category: string;
   connected: boolean;
   initials: string;
+  status?: "connected" | "disconnected" | "expired" | "error" | "requires_reauth";
+  capabilities?: string[];
+  lastSyncAt?: string;
+  healthMessage?: string;
 }
 
 export interface FinancialAccount {
   id: string;
   customerName: string;
+  customerEmail?: string;
   document: string;
   amount: number;
   dueDate: string;
@@ -83,15 +96,54 @@ export interface FinancialAccount {
   createdAt: string;
 }
 
+export type ExternalEmailActionStatus = "draft" | "awaiting_approval" | "sending" | "sent" | "failed" | "rejected";
+export type CollectionEmailActionStatus = ExternalEmailActionStatus;
+
+export interface CollectionEmailAccountSnapshot {
+  id: string;
+  customerName: string;
+  document: string;
+  amount: number;
+  dueDate: string;
+}
+
+export interface CollectionEmailAction {
+  id: string;
+  taskId: string;
+  approvalId: string;
+  accountIds: string[];
+  accounts: CollectionEmailAccountSnapshot[];
+  customerName: string;
+  to: string;
+  subject: string;
+  body: string;
+  totalAmount: number;
+  status: CollectionEmailActionStatus;
+  approvalStatus: "pending" | "approved" | "rejected";
+  idempotencyKey: string;
+  messageIdHeader: string;
+  attempt: number;
+  externalMessageId?: string;
+  externalThreadId?: string;
+  error?: string;
+  approvedBy?: string;
+  createdAt: string;
+  updatedAt: string;
+  approvedAt?: string;
+  sentAt?: string;
+  events: Array<{ type: "prepared" | "edited" | "approved" | "sent" | "failed" | "retried" | "rejected"; at: string; actor?: string; detail?: string }>;
+}
+
 export type FinancialRisk = "baixo" | "médio" | "alto";
 export type CollectionPriority = "baixa" | "média" | "alta" | "urgente";
 
 export interface FinancialCollectionEvent {
   id: string;
   accountId: string;
+  externalActionId?: string;
   customerName: string;
   document: string;
-  eventType: "analysis" | "approval" | "refusal" | "adjustment";
+  eventType: "analysis" | "approval" | "refusal" | "adjustment" | "blocked";
   title: string;
   description: string;
   risk: FinancialRisk;
@@ -168,7 +220,18 @@ export interface FinancialHandoff {
 
 export interface FinancialBudget { id: string; category: string; limit: number; period: string; }
 
-export type ProcurementRequestStatus = "quoting" | "recommended" | "awaiting_approval" | "approved" | "rejected";
+export type ProcurementRequestStatus = "quoting" | "requesting_quotes" | "quotes_requested" | "recommended" | "awaiting_approval" | "approved" | "rejected";
+
+export interface SupplierContact {
+  id: string;
+  name: string;
+  email: string;
+  taxId?: string;
+  categories: string[];
+  notes: string;
+  source: "manual" | "csv";
+  createdAt: string;
+}
 
 export interface ProcurementRequest {
   id: string;
@@ -179,9 +242,97 @@ export interface ProcurementRequest {
   neededBy: string;
   project: string;
   notes: string;
+  supplierIds?: string[];
   status: ProcurementRequestStatus;
   recommendedQuoteId?: string;
   createdAt: string;
+}
+
+export interface SupplierQuoteRequestEmailAction {
+  id: string;
+  taskId: string;
+  approvalId: string;
+  requestId: string;
+  supplierId: string;
+  supplierName: string;
+  to: string;
+  subject: string;
+  body: string;
+  status: ExternalEmailActionStatus;
+  approvalStatus: "pending" | "approved" | "rejected";
+  idempotencyKey: string;
+  messageIdHeader: string;
+  attempt: number;
+  externalMessageId?: string;
+  externalThreadId?: string;
+  error?: string;
+  approvedBy?: string;
+  createdAt: string;
+  updatedAt: string;
+  approvedAt?: string;
+  sentAt?: string;
+  events: Array<{ type: "prepared" | "edited" | "approved" | "sent" | "failed" | "retried" | "rejected"; at: string; actor?: string; detail?: string }>;
+}
+
+export interface SupportCase {
+  id: string;
+  customerName: string;
+  customerEmail: string;
+  subject: string;
+  message: string;
+  priority: "baixa" | "média" | "alta" | "urgente";
+  status: "open" | "awaiting_approval" | "replied" | "closed";
+  source: "manual" | "gmail";
+  gmailMessageId?: string;
+  gmailThreadId?: string;
+  gmailRfcMessageId?: string;
+  repliedAt?: string;
+  createdAt: string;
+}
+
+export interface SalesLead {
+  id: string;
+  contactName: string;
+  companyName: string;
+  email: string;
+  stage: "novo" | "qualificado" | "proposta" | "negociação" | "ganho" | "perdido";
+  context: string;
+  lastContactAt?: string;
+  nextFollowupAt?: string;
+  estimatedValue?: number;
+  score?: number;
+  status: "active" | "awaiting_approval" | "contacted" | "archived";
+  source: "manual" | "csv";
+  createdAt: string;
+}
+
+export interface AgentOutboundEmailAction {
+  id: string;
+  taskId: string;
+  approvalId: string;
+  kind: "support_reply" | "sales_followup";
+  employeeId: "sofia" | "lucas";
+  entityId: string;
+  sourceThreadId?: string;
+  inReplyToMessageId?: string;
+  recipientName: string;
+  to: string;
+  subject: string;
+  body: string;
+  status: ExternalEmailActionStatus;
+  approvalStatus: "pending" | "approved" | "rejected";
+  idempotencyKey: string;
+  messageIdHeader: string;
+  attempt: number;
+  externalMessageId?: string;
+  externalThreadId?: string;
+  error?: string;
+  approvedBy?: string;
+  createdAt: string;
+  updatedAt: string;
+  approvedAt?: string;
+  sentAt?: string;
+  events: Array<{ type: "prepared" | "edited" | "approved" | "sent" | "failed" | "retried" | "rejected"; at: string; actor?: string; detail?: string }>;
 }
 
 export interface SupplierQuote {
@@ -211,5 +362,8 @@ export interface DemoState {
   financialHandoffs: FinancialHandoff[];
   financialBudgets: FinancialBudget[];
   procurementRequests: ProcurementRequest[];
+  suppliers: SupplierContact[];
   supplierQuotes: SupplierQuote[];
+  supportCases: SupportCase[];
+  salesLeads: SalesLead[];
 }
