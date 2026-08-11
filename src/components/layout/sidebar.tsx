@@ -24,7 +24,7 @@ const navigation = [
   { href: "/aprovacoes", label: "Aprovações", icon: BadgeCheck, approvals: true },
   { href: "/atividades", label: "Atividades", icon: Activity },
   { href: "/briefing", label: "Crew Briefing", icon: BookOpen },
-  { href: "/lista-de-espera", label: "Lista de espera", icon: ListPlus },
+  { href: "/painel/lista-de-espera", label: "Lista de espera", icon: ListPlus },
   { href: "/store", label: "Crew Store", icon: ShoppingBag },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
 ];
