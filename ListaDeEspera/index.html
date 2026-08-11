@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Entre na lista de espera da CrewOS, a plataforma para montar e liderar sua equipe de funcionários digitais.">
   <meta name="theme-color" content="#0b0c0a">
-  <meta name="waitlist-endpoint" content="">
+  <meta name="waitlist-endpoint" content="/api/waitlist">
   <title>CrewOS — Entre na lista de espera</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -133,6 +133,7 @@
         <p>Entre na lista para receber novidades do desenvolvimento, bastidores e prioridade quando abrirmos os primeiros acessos.</p>
       </div>
       <form class="waitlist-form reveal delay-1" id="waitlist-form" novalidate>
+        <div class="website-field" aria-hidden="true"><label for="website">Não preencha este campo</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
         <div class="mobile-form-intro">
           <span class="mobile-kicker">ACESSO ANTECIPADO</span>
           <h1>Entre para a primeira <em>Crew.</em></h1>

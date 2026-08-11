@@ -73,7 +73,7 @@ form?.addEventListener("submit", async (event) => {
   }
 
   const values = Object.fromEntries(new FormData(form).entries());
-  const payload = { name: values.name, email: values.email, company: values.company || "", role: values.role || "", source: "lista-de-espera", createdAt: new Date().toISOString() };
+  const payload = { name: values.name, email: values.email, company: values.company || "", role: values.role || "", source: "lista-de-espera", website: values.website || "" };
   submitButton.disabled = true;
   submitButton.querySelector("span").textContent = "Entrando na lista...";
 
@@ -83,12 +83,13 @@ form?.addEventListener("submit", async (event) => {
       showStatus("Cadastro validado! A página está em modo de prévia; conecte o endpoint antes da divulgação para receber inscrições reais.");
     } else {
       const response = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-      if (!response.ok) throw new Error(`O servidor respondeu ${response.status}`);
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || `O servidor respondeu ${response.status}`);
       form.reset();
-      showStatus("Você entrou na lista! Em breve enviaremos novidades e os primeiros convites.");
+      showStatus(result.created === false ? "Seu cadastro já estava na lista e foi atualizado." : "Você entrou na lista! Em breve enviaremos novidades e os primeiros convites.");
     }
   } catch (error) {
-    showStatus("Não conseguimos concluir agora. Tente novamente em alguns instantes.", true);
+    showStatus(error instanceof Error && error.message ? error.message : "Não conseguimos concluir agora. Tente novamente em alguns instantes.", true);
     console.error("Falha no cadastro da lista de espera", error);
   } finally {
     submitButton.disabled = false;

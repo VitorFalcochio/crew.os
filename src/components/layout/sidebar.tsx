@@ -3,7 +3,7 @@
 import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, BadgeCheck, BookOpen, BrainCircuit, Building2, ChevronDown, ChevronLeft, ChevronRight, Headphones, LayoutDashboard, LogOut, PackageSearch, PanelsTopLeft, ReceiptText, Repeat2, Settings, ShoppingBag, TrendingUp, UsersRound } from "lucide-react";
+import { Activity, BadgeCheck, BookOpen, BrainCircuit, Building2, ChevronDown, ChevronLeft, ChevronRight, Headphones, LayoutDashboard, ListPlus, LogOut, PackageSearch, PanelsTopLeft, ReceiptText, Repeat2, Settings, ShoppingBag, TrendingUp, UsersRound } from "lucide-react";
 import { Logo } from "./logo";
 import { Avatar } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
@@ -24,6 +24,7 @@ const navigation = [
   { href: "/aprovacoes", label: "Aprovações", icon: BadgeCheck, approvals: true },
   { href: "/atividades", label: "Atividades", icon: Activity },
   { href: "/briefing", label: "Crew Briefing", icon: BookOpen },
+  { href: "/lista-de-espera", label: "Lista de espera", icon: ListPlus },
   { href: "/store", label: "Crew Store", icon: ShoppingBag },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
 ];

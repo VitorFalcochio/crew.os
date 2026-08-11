@@ -10,7 +10,7 @@ Landing page estática em HTML, CSS e JavaScript. Abra `index.html` diretamente 
 
 ## Formulário
 
-Antes da divulgação, conecte um endpoint que aceite `POST` JSON. Em `index.html`, preencha:
+O formulário já aponta para `/api/waitlist`, disponível quando a página é publicada no mesmo domínio da CrewOS. Se a landing estiver em outro domínio, troque o conteúdo da meta pela URL completa da API:
 
 ```html
 <meta name="waitlist-endpoint" content="https://seu-endpoint.com/api/waitlist">
@@ -24,9 +24,10 @@ Payload enviado:
   "email": "email@empresa.com",
   "company": "Empresa",
   "role": "Gestão / Direção",
-  "source": "lista-de-espera",
-  "createdAt": "2026-08-10T12:00:00.000Z"
+  "source": "lista-de-espera"
 }
 ```
 
-Sem endpoint, o formulário permanece em modo de prévia e guarda um único cadastro apenas no navegador do visitante. Não divulgue a página nesse modo.
+A API normaliza o e-mail e registra a data de entrada no servidor.
+
+Cadastros locais ficam em `.crewos-data/waitlist-leads.json`. Em produção, aplique a migration `202608100002_waitlist.sql` e configure o Supabase; o filesystem da Vercel não é persistência durável.

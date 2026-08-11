@@ -6,6 +6,7 @@ const publicRoutes = ["/login", "/cadastro", "/recuperar", "/nova-senha", "/auth
 
 export async function updateSession(request: NextRequest) {
   if (!isSupabaseConfigured()) {
+    if (request.nextUrl.pathname === "/api/waitlist" && ["POST", "OPTIONS"].includes(request.method)) return NextResponse.next({ request });
     if (isDemoModeAllowed()) return NextResponse.next({ request });
 
     const path = request.nextUrl.pathname;
@@ -38,7 +39,8 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const authenticated = Boolean(data?.claims?.sub);
   const path = request.nextUrl.pathname;
-  const isPublic = publicRoutes.some((route) => path.startsWith(route));
+  const isPublicWaitlistSubmission = path === "/api/waitlist" && ["POST", "OPTIONS"].includes(request.method);
+  const isPublic = isPublicWaitlistSubmission || publicRoutes.some((route) => path.startsWith(route));
   const isProtected = !isPublic && !path.startsWith("/_next") && !path.includes(".");
   if (!authenticated && isProtected) {
     if (path.startsWith("/api/")) return NextResponse.json({ error: "Autenticação necessária" }, { status: 401 });

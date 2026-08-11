@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --conditions=react-server --import tsx --test tests/orchestration.test.mjs tests/providers.test.ts tests/brains.test.ts tests/crew-intelligence.test.ts tests/director.test.ts tests/deployment-mode.test.ts tests/local-finance.test.ts tests/capabilities.test.ts tests/financial-operations.test.ts tests/procurement.test.ts tests/customer-operations.test.ts tests/employee-chat.test.ts tests/integration-engine.test.ts"
+    "test": "node --conditions=react-server --import tsx --test tests/orchestration.test.mjs tests/providers.test.ts tests/brains.test.ts tests/crew-intelligence.test.ts tests/director.test.ts tests/deployment-mode.test.ts tests/local-finance.test.ts tests/capabilities.test.ts tests/financial-operations.test.ts tests/procurement.test.ts tests/customer-operations.test.ts tests/employee-chat.test.ts tests/integration-engine.test.ts tests/waitlist.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
