@@ -1,3 +1,6 @@
 {
-  "crons": [{ "path": "/api/internal/tick?batch=5", "schedule": "* * * * *" }]
+  "crons": [
+    { "path": "/api/internal/tick?batch=5", "schedule": "* * * * *" },
+    { "path": "/api/internal/conta-azul-sync", "schedule": "17 */6 * * *" }
+  ]
 }

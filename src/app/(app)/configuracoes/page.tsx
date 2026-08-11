@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Bell, Building2, Check, CreditCard, Download, LockKeyhole, Plug, RotateCcw, Save, Settings2, ShieldCheck, Trash2, UserRound, X } from "lucide-react";
+import { Bell, Building2, Check, CreditCard, Download, LockKeyhole, Plug, RefreshCw, RotateCcw, Save, Settings2, ShieldCheck, Trash2, UserRound, X } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { useDemo } from "@/features/demo/demo-provider";
@@ -33,6 +33,7 @@ export default function SettingsPage() {
   const [preferences, setPreferences] = useState({ approvals: true, failures: true, dailySummary: true, autonomy: "supervisionada" });
   const [saved, setSaved] = useState(false);
   const [editingCard, setEditingCard] = useState(false);
+  const [syncingContaAzul, setSyncingContaAzul] = useState(false);
   const [card, setCard] = useState({ number: "•••• •••• •••• 4242", holder: account.name, expiry: "12/29" });
   const hired = useMemo(() => employees.filter((employee) => employee.hired), [employees]);
   const included = 3;
@@ -43,6 +44,12 @@ export default function SettingsPage() {
   useEffect(() => {
     const timeout = window.setTimeout(() => {
       setActiveTab(tabFromUrl());
+      const params = new URLSearchParams(window.location.search);
+      const contaAzulStatus = params.get("contaAzul");
+      if (contaAzulStatus === "connected") toast.success("Conta Azul conectado", { description: "A empresa foi identificada e os tokens foram protegidos no cofre da CrewOS." });
+      else if (contaAzulStatus === "denied") toast.warning("Conexão cancelada", { description: "A autorização do Conta Azul não foi concedida." });
+      else if (contaAzulStatus) toast.error("Não foi possível conectar o Conta Azul", { description: contaAzulStatus === "not_configured" ? "Revise as credenciais na Vercel." : contaAzulStatus === "invalid_state" ? "A tentativa expirou. Inicie a conexão novamente." : "Revise a configuração e tente novamente." });
+      if (contaAzulStatus) { params.delete("contaAzul"); const query = params.toString(); window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}`); }
       const stored = localStorage.getItem("crewos-company-settings");
       if (!stored) return;
       try {
@@ -80,6 +87,21 @@ export default function SettingsPage() {
     const anchor = document.createElement("a"); anchor.href = url; anchor.download = "comprovante-crewos-julho-2026.txt"; anchor.click(); URL.revokeObjectURL(url); toast.success("Comprovante baixado");
   }
 
+  async function syncContaAzul() {
+    setSyncingContaAzul(true);
+    try {
+      const response = await fetch("/api/integrations/conta-azul/sync", { method: "POST" });
+      const payload = await response.json() as { error?: string; counts?: { customers: number; suppliers: number; receivables: number; payables: number; balances: number } };
+      if (!response.ok || !payload.counts) throw new Error(payload.error ?? "Não foi possível sincronizar o Conta Azul");
+      toast.success("Conta Azul sincronizado", { description: `${payload.counts.receivables} a receber, ${payload.counts.payables} a pagar, ${payload.counts.customers} clientes e ${payload.counts.balances} saldos atualizados.` });
+      window.setTimeout(() => window.location.reload(), 700);
+    } catch (error) {
+      toast.error("Falha na sincronização", { description: error instanceof Error ? error.message : "Tente novamente." });
+    } finally {
+      setSyncingContaAzul(false);
+    }
+  }
+
   const editableTab = activeTab === "geral" || activeTab === "operacao" || activeTab === "notificacoes";
 
   return <>
@@ -115,7 +137,7 @@ export default function SettingsPage() {
 
         {activeTab === "integracoes" && <div className={styles.panelStack}>
           <div className={styles.integrationNotice}><span><LockKeyhole size={15} /></span><div><strong>Conexões protegidas</strong><p>{backendEnabled ? "Tokens permanecem no Integration Engine e nunca chegam ao navegador." : "Credenciais criptografadas no servidor local e isoladas do navegador."}</p></div></div>
-          <section className={styles.integrationGrid}>{integrations.map((integration) => <article className={styles.integrationCard} key={integration.provider ?? integration.id}><span className={styles.integrationLogo}>{integration.initials}</span><div><h3>{integration.name}</h3><p>{integration.description}</p><small>{integration.status === "requires_reauth" ? integration.healthMessage ?? "Reconexão necessária" : integration.connected ? integration.provider === "google-workspace" ? "Conectado · disponível no Workspace" : "Conectado" : "Não conectado"}</small></div><button className={`toggle ${integration.connected ? "on" : ""}`} onClick={() => toggleIntegration(integration.id)} aria-label={`${integration.connected ? "Desconectar" : integration.status === "requires_reauth" ? "Reconectar" : "Conectar"} ${integration.name}`}><span /></button></article>)}</section>
+          <section className={styles.integrationGrid}>{integrations.map((integration) => <article className={styles.integrationCard} key={integration.provider ?? integration.id}><span className={styles.integrationLogo}>{integration.initials}</span><div><h3>{integration.name}</h3><p>{integration.description}</p><small>{integration.status === "requires_reauth" ? integration.healthMessage ?? "Reconexão necessária" : integration.connected ? integration.provider === "google-workspace" ? "Conectado · disponível no Workspace" : integration.lastSyncAt ? `Sincronizado em ${new Date(integration.lastSyncAt).toLocaleString("pt-BR")}` : "Conectado" : "Não conectado"}</small></div><div className={styles.integrationActions}>{integration.provider === "conta-azul" && integration.connected && <button className={styles.syncButton} type="button" disabled={syncingContaAzul} onClick={syncContaAzul}><RefreshCw size={13} className={syncingContaAzul ? styles.spinning : ""} />{syncingContaAzul ? "Sincronizando" : "Sincronizar"}</button>}<button className={`toggle ${integration.connected ? "on" : ""}`} onClick={() => toggleIntegration(integration.id)} aria-label={`${integration.connected ? "Desconectar" : integration.status === "requires_reauth" ? "Reconectar" : "Conectar"} ${integration.name}`}><span /></button></div></article>)}</section>
         </div>}
 
         {activeTab === "assinatura" && <div className={styles.billingStack}>

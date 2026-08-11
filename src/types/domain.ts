@@ -91,9 +91,19 @@ export interface FinancialAccount {
   document: string;
   amount: number;
   dueDate: string;
-  status: "open" | "paid" | "overdue";
-  source: "manual" | "sample" | "api";
+  direction?: "receivable" | "payable";
+  status: "open" | "paid" | "overdue" | "cancelled";
+  source: "manual" | "sample" | "api" | "conta-azul";
   createdAt: string;
+}
+
+export interface FinancialBalance {
+  id: string;
+  accountName: string;
+  accountType?: string;
+  balance: number;
+  provider: string;
+  balanceAt: string;
 }
 
 export type ExternalEmailActionStatus = "draft" | "awaiting_approval" | "sending" | "sent" | "failed" | "rejected";
@@ -355,6 +365,7 @@ export interface DemoState {
   activities: Activity[];
   integrations: Integration[];
   financialAccounts: FinancialAccount[];
+  financialBalances: FinancialBalance[];
   financialCollectionEvents: FinancialCollectionEvent[];
   financialDocuments: FinancialDocument[];
   financialEntries: FinancialEntry[];

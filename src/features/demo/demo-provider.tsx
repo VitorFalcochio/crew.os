@@ -160,6 +160,15 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
 
   const toggleIntegration = useCallback((id: string) => {
     const selectedIntegration = state.integrations.find((item) => item.id === id);
+    if (selectedIntegration?.provider === "conta-azul") {
+      if (!selectedIntegration.connected) { router.push("/api/integrations/conta-azul/connect"); return; }
+      void fetch("/api/integrations/conta-azul/disconnect", { method: "DELETE" }).then(async (response) => {
+        if (!response.ok) { const payload = await response.json() as { error?: string }; throw new Error(payload.error ?? "Não foi possível desconectar o Conta Azul"); }
+        if (hasBackend) await refreshBackend();
+        toast.success("Conta Azul desconectado");
+      }).catch((error: Error) => toast.error("Falha na integração", { description: error.message }));
+      return;
+    }
     if (selectedIntegration?.provider === "google-workspace") {
       if (!selectedIntegration.connected) { router.push("/api/integrations/google/connect"); return; }
       const request = hasBackend ? fetch(`/api/integrations/connections/${selectedIntegration.id}`, { method: "DELETE" }) : fetch("/api/integrations/google/disconnect", { method: "DELETE" });
@@ -278,7 +287,8 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     const ana = state.employees.find((employee) => employee.id === "ana" && employee.hired);
     if (!ana) { toast.error("Ana não está na equipe"); return false; }
     if (state.tasks.some((task) => task.employeeId === "ana" && ["planejando", "executando", "aguardando aprovação"].includes(task.status))) { toast.error("Ana já possui uma análise em andamento"); return false; }
-    if (!state.financialAccounts.length) { toast.error("Importe pelo menos uma conta a receber"); return false; }
+    const receivables = state.financialAccounts.filter((account) => (account.direction ?? "receivable") === "receivable" && account.status !== "cancelled");
+    if (!receivables.length) { toast.error("Importe pelo menos uma conta a receber"); return false; }
 
     const taskId = crypto.randomUUID();
     const task: Task = { id: taskId, employeeId: "ana", title: "Analisar contas a receber", description: "Classificar recebíveis, identificar atrasos e preparar cobranças reais por Gmail.", priority: "alta", status: "executando", dueAt: "Agora", requiresApproval: true, createdAt: "Agora" };
@@ -288,7 +298,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     window.setTimeout(() => {
       void (async () => {
         const today = new Date().toISOString().slice(0, 10);
-        const analysis = analyzeLocalReceivables(state.financialAccounts, today);
+        const analysis = analyzeLocalReceivables(receivables, today);
         const { overdue, overdueTotal: total, analyzed, assessments } = analysis;
         const baseResult = `${analyzed} conta(s) analisada(s) · ${overdue.length} vencida(s) · R$ ${total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} em cobrança potencial`;
         const analyzedActivity: Activity = { id: crypto.randomUUID(), employeeId: "ana", taskId, title: "Contas analisadas", description: baseResult, type: "ferramenta", createdAt: "Agora" };

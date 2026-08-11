@@ -1,10 +1,27 @@
 import { answerFinancialQuestion, buildFinancialOverview } from "@/features/finance/financial-operations";
 import type { DemoState, Employee } from "@/types/domain";
 
-type ChatState = Pick<DemoState, "tasks" | "approvals" | "financialEntries" | "financialDocuments" | "procurementRequests" | "supplierQuotes">;
+type ChatState = Pick<DemoState, "tasks" | "approvals" | "financialEntries" | "financialDocuments" | "procurementRequests" | "supplierQuotes"> & Partial<Pick<DemoState, "financialAccounts" | "financialBalances">>;
 
 const normalize = (value: string) => value.trim().toLocaleLowerCase("pt-BR");
 const brl = (value: number) => value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+function anaFinancialEntries(state: ChatState) {
+  const today = new Date().toISOString().slice(0, 10);
+  return [...state.financialEntries, ...(state.financialAccounts ?? []).filter((account) => account.status !== "cancelled").map((account) => ({
+    id: `synced-${account.id}`,
+    direction: account.direction ?? "receivable" as const,
+    counterparty: account.customerName,
+    description: account.document,
+    amount: account.amount,
+    paidAmount: account.status === "paid" ? account.amount : 0,
+    dueDate: account.dueDate,
+    status: account.status === "paid" ? "paid" as const : account.status === "overdue" || account.dueDate < today ? "overdue" as const : "open" as const,
+    category: account.direction === "payable" ? "Despesas operacionais" : "Receitas operacionais",
+    sourceDocumentIds: [],
+    createdAt: account.createdAt,
+  }))];
+}
 
 function socialReply(employee: Employee, question: string) {
   const query = normalize(question).replace(/[!?.,]+/g, " ").replace(/\s+/g, " ").trim();
@@ -33,7 +50,7 @@ export function buildEmployeeChatContext(employee: Employee, state: ChatState, o
     tasks: employeeTasks,
     approvals: employeeApprovals,
   };
-  if (employee.id === "ana") return JSON.stringify({ ...base, financialEntries: state.financialEntries.slice(0, 80), financialDocuments: state.financialDocuments.slice(0, 80) });
+  if (employee.id === "ana") return JSON.stringify({ ...base, financialEntries: anaFinancialEntries(state).slice(0, 200), financialBalances: (state.financialBalances ?? []).slice(0, 100), financialDocuments: state.financialDocuments.slice(0, 80) });
   if (employee.id === "carlos") return JSON.stringify({ ...base, procurementRequests: state.procurementRequests.slice(0, 50), supplierQuotes: state.supplierQuotes.slice(0, 100) });
   return JSON.stringify(base);
 }
@@ -71,7 +88,7 @@ export function answerEmployeeQuestion(employee: Employee, question: string, sta
   const conversational = socialReply(employee, question);
   if (conversational) return conversational;
   if (employee.id === "ana") {
-    const overview = buildFinancialOverview(state.financialEntries, state.financialDocuments, new Date().toISOString().slice(0, 10));
+    const overview = buildFinancialOverview(anaFinancialEntries(state), state.financialDocuments, new Date().toISOString().slice(0, 10));
     return answerFinancialQuestion(question, overview);
   }
   if (employee.id === "carlos") return answerProcurementQuestion(question, state);

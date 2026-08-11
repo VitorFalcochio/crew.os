@@ -47,4 +47,4 @@ export const financialAccounts: FinancialAccount[] = [
   { id: "account-sample-3", customerName: "Construtora Pátio", document: "NF-1060", amount: 12900, dueDate: "2026-08-09", status: "open", source: "sample", createdAt: "Demonstração" },
 ];
 
-export const initialDemoState: DemoState = { employees, tasks, approvals, activities, integrations, financialAccounts, financialCollectionEvents: [], financialDocuments: [], financialEntries: [], anaAuditEvents: [], financialHandoffs: [], financialBudgets: [], procurementRequests: [], suppliers: [], supplierQuotes: [], supportCases: [], salesLeads: [] };
+export const initialDemoState: DemoState = { employees, tasks, approvals, activities, integrations, financialAccounts, financialBalances: [], financialCollectionEvents: [], financialDocuments: [], financialEntries: [], anaAuditEvents: [], financialHandoffs: [], financialBudgets: [], procurementRequests: [], suppliers: [], supplierQuotes: [], supportCases: [], salesLeads: [] };
