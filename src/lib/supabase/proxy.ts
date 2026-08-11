@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSupabaseConfig, isDemoModeAllowed, isSupabaseConfigured } from "./config";
 
-const publicRoutes = ["/login", "/cadastro", "/recuperar", "/nova-senha", "/auth/callback", "/api/internal/", "/api/webhooks/"];
+const publicRoutes = ["/acesso", "/lista-de-espera", "/login", "/cadastro", "/recuperar", "/nova-senha", "/termos", "/privacidade", "/auth/callback", "/api/internal/", "/api/webhooks/"];
 
 export async function updateSession(request: NextRequest) {
   if (!isSupabaseConfigured()) {
@@ -10,7 +10,7 @@ export async function updateSession(request: NextRequest) {
     if (isDemoModeAllowed()) return NextResponse.next({ request });
 
     const path = request.nextUrl.pathname;
-    if (path === "/" || path === "/termos" || path === "/privacidade" || path.startsWith("/_next") || path.includes(".")) {
+    if (path === "/" || path === "/acesso" || path.startsWith("/lista-de-espera") || path === "/termos" || path === "/privacidade" || path.startsWith("/_next") || path.includes(".")) {
       return NextResponse.next({ request });
     }
 
@@ -40,15 +40,15 @@ export async function updateSession(request: NextRequest) {
   const authenticated = Boolean(data?.claims?.sub);
   const path = request.nextUrl.pathname;
   const isPublicWaitlistSubmission = path === "/api/waitlist" && ["POST", "OPTIONS"].includes(request.method);
-  const isPublic = isPublicWaitlistSubmission || publicRoutes.some((route) => path.startsWith(route));
+  const isPublic = path === "/" || isPublicWaitlistSubmission || publicRoutes.some((route) => path.startsWith(route));
   const isProtected = !isPublic && !path.startsWith("/_next") && !path.includes(".");
   if (!authenticated && isProtected) {
     if (path.startsWith("/api/")) return NextResponse.json({ error: "Autenticação necessária" }, { status: 401 });
     const target = request.nextUrl.clone();
-    target.pathname = "/login";
+    target.pathname = "/acesso";
     target.searchParams.set("next", path);
     return NextResponse.redirect(target);
   }
-  if (authenticated && ["/login", "/cadastro"].includes(path)) return NextResponse.redirect(new URL("/central", request.url));
+  if (authenticated && ["/acesso", "/login", "/cadastro"].includes(path)) return NextResponse.redirect(new URL("/central", request.url));
   return response;
 }

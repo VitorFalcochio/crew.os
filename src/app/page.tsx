@@ -68,7 +68,7 @@ export default function Home() {
     <header className="landing-nav">
       <Link href="/" className="landing-logo" aria-label="CrewOS — página inicial"><Logo /></Link>
       <nav aria-label="Navegação principal"><a href="#produto">Produto</a><a href="#equipe">Equipe digital</a><a href="#integracoes">Integrações</a><a href="#como-funciona">Como funciona</a></nav>
-      <div className="landing-nav-actions"><Link href="/login">Entrar</Link><Link href="/cadastro" className="landing-nav-cta">Começar agora <ArrowRight size={13} /></Link></div>
+      <div className="landing-nav-actions"><Link href="/acesso">Entrar</Link><Link href="/lista-de-espera" className="landing-nav-cta">Entrar na lista <ArrowRight size={13} /></Link></div>
     </header>
 
     <section className="landing-hero">
@@ -78,7 +78,7 @@ export default function Home() {
         <h1>Sua empresa.<br />Sua equipe <em>digital.</em></h1>
         <p>Contrate funcionários de IA especializados para executar, colaborar e gerar resultados todos os dias.</p>
         <div className={`landing-hero-actions ${styles.heroActions}`}>
-          <Link href="/cadastro" className="landing-primary-cta">Criar minha equipe <ArrowRight size={16} /></Link>
+          <Link href="/lista-de-espera" className="landing-primary-cta">Entrar na lista de espera <ArrowRight size={16} /></Link>
           <a href="#produto" className="landing-secondary-cta"><Play size={13} fill="currentColor" /> Conhecer a CrewOS</a>
         </div>
       </div>
@@ -142,7 +142,7 @@ export default function Home() {
         {employees.map((employee, index) => (
           <article key={employee.name}>
             <div className={experience.employeePhoto}><Image src={employee.image} alt={`${employee.name}, especialista de ${employee.department}`} fill sizes="(max-width: 600px) 78vw, 280px" /></div>
-            <div className={experience.employeeInfo}><span>0{index + 1} · {employee.department}</span><h3>{employee.name}</h3><p>{employee.description}</p><Link href="/cadastro">Adicionar à equipe <ArrowRight size={14} /></Link></div>
+            <div className={experience.employeeInfo}><span>0{index + 1} · {employee.department}</span><h3>{employee.name}</h3><p>{employee.description}</p><Link href="/lista-de-espera">Quero acesso antecipado <ArrowRight size={14} /></Link></div>
           </article>
         ))}
       </div>
@@ -194,7 +194,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <footer className={experience.integrationsFooter}><ShieldCheck size={14} /><span>Credenciais protegidas. Cada funcionário acessa somente as ações que você autorizar.</span><Link href="/cadastro">Quero integrar minha empresa <ArrowRight size={14} /></Link></footer>
+        <footer className={experience.integrationsFooter}><ShieldCheck size={14} /><span>Credenciais protegidas. Cada funcionário acessa somente as ações que você autorizar.</span><Link href="/lista-de-espera">Quero acesso antecipado <ArrowRight size={14} /></Link></footer>
       </div>
     </section>
 
@@ -207,10 +207,14 @@ export default function Home() {
       <div className={experience.finalGlow} aria-hidden="true" />
       <span className="landing-pill"><i /> Sua equipe está pronta</span>
       <h2>Coloque sua empresa<br />em <em>movimento.</em></h2>
-      <p>Monte sua primeira equipe digital e delegue o próximo resultado que precisa acontecer.</p>
-      <Link href="/cadastro" className="landing-primary-cta">Criar minha equipe <ArrowRight size={16} /></Link>
+      <p>Monte sua primeira equipe digital ou entre no ambiente seguro para acompanhar sua operação.</p>
+      <div className={experience.finalActions}>
+        <Link href="/lista-de-espera" className="landing-primary-cta">Entrar na lista de espera <ArrowRight size={16} /></Link>
+        <Link href="/acesso?next=/central" className={experience.panelCta}><ShieldCheck size={15} /> Acessar painel protegido</Link>
+      </div>
+      <small className={experience.accessNote}>Acesso restrito pela senha proprietária · sessão protegida pelo Supabase</small>
     </section>
 
-    <footer className={experience.footer}><Logo /><p>CrewOS é o sistema operacional da sua equipe digital.</p><div><Link href="/login">Entrar</Link><Link href="/cadastro">Criar conta</Link></div><small>© 2026 CrewOS. Sua empresa. Sua equipe digital.</small></footer>
+    <footer className={experience.footer}><Logo /><p>CrewOS é o sistema operacional da sua equipe digital.</p><div><Link href="/acesso">Painel</Link><Link href="/lista-de-espera">Lista de espera</Link></div><small>© 2026 CrewOS. Sua empresa. Sua equipe digital.</small></footer>
   </main>;
 }

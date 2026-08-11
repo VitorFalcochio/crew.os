@@ -10,7 +10,7 @@ export default async function ProductLayout({ children }: { children: React.Reac
   if (isSupabaseConfigured()) {
     try { await requireOrganization(); }
     catch (error) {
-      if (error instanceof AuthenticationError) redirect("/login");
+      if (error instanceof AuthenticationError) redirect("/acesso");
       if (error instanceof OrganizationAccessError) redirect("/onboarding");
       throw error;
     }
