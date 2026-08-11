@@ -1,11 +1,19 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { answerEmployeeQuestion, buildEmployeeChatContext } from "../src/features/crew/employee-chat";
+import { deriveEmployeeInitials } from "../src/features/demo/services/backend-adapter";
 import type { Employee } from "../src/types/domain";
 
 const ana = { id: "ana", name: "Ana", role: "Financeiro Digital", department: "Financeiro", skills: ["Fluxo de caixa"], responsibilities: ["Organizar contas"] } as Employee;
 const carlos = { id: "carlos", name: "Carlos", role: "Compras", department: "Compras", skills: ["Cotações"], responsibilities: ["Comparar fornecedores"] } as Employee;
 const baseState = { tasks: [], approvals: [], financialEntries: [], financialDocuments: [], procurementRequests: [], supplierQuotes: [] };
+
+test("funcionários do backend preservam as iniciais usadas pelos retratos", () => {
+  assert.equal(deriveEmployeeInitials("Ana"), "AN");
+  assert.equal(deriveEmployeeInitials("Carlos"), "CA");
+  assert.equal(deriveEmployeeInitials("Júlia"), "JU");
+  assert.equal(deriveEmployeeInitials("Maria Silva"), "MS");
+});
 
 test("o chat da Ana responde usando os dados financeiros locais", () => {
   const state = { ...baseState, financialEntries: [{ id: "entry-1", direction: "payable" as const, counterparty: "Fornecedor", description: "Material", amount: 2500, paidAmount: 0, dueDate: "2026-08-12", status: "open" as const, category: "Materiais", sourceDocumentIds: [], createdAt: "Agora" }] };
