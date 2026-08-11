@@ -114,6 +114,7 @@ export function createLocalWorkspace(company: LocalCompany, selectedEmployeeIds:
     activities: [{ id: crypto.randomUUID(), title: "Empresa criada no MVP local", description: `${company.name} iniciou um ambiente local de validação. Nenhuma ação externa será executada.`, type: "sistema", createdAt: "Agora" }],
     integrations: integrations.map((integration) => ({ ...integration, connected: false })),
     financialAccounts: [],
+    financialBalances: [],
     financialCollectionEvents: [],
     financialDocuments: [],
     financialEntries: [],
@@ -144,7 +145,7 @@ export function readLocalWorkspace(): LocalWorkspace | null {
     const raw = window.localStorage.getItem(LOCAL_WORKSPACE_KEY);
     const workspace = raw ? JSON.parse(raw) as LocalWorkspace : null;
     if (workspace?.version !== 1) return null;
-    return { ...workspace, state: { ...workspace.state, financialAccounts: workspace.state.financialAccounts ?? [], financialCollectionEvents: workspace.state.financialCollectionEvents ?? [], financialDocuments: workspace.state.financialDocuments ?? [], financialEntries: workspace.state.financialEntries ?? [], anaAuditEvents: workspace.state.anaAuditEvents ?? [], financialHandoffs: workspace.state.financialHandoffs ?? [], financialBudgets: workspace.state.financialBudgets ?? [], procurementRequests: workspace.state.procurementRequests ?? [], suppliers: workspace.state.suppliers ?? [], supplierQuotes: workspace.state.supplierQuotes ?? [], supportCases: workspace.state.supportCases ?? [], salesLeads: workspace.state.salesLeads ?? [] } };
+    return { ...workspace, state: { ...workspace.state, financialAccounts: workspace.state.financialAccounts ?? [], financialBalances: workspace.state.financialBalances ?? [], financialCollectionEvents: workspace.state.financialCollectionEvents ?? [], financialDocuments: workspace.state.financialDocuments ?? [], financialEntries: workspace.state.financialEntries ?? [], anaAuditEvents: workspace.state.anaAuditEvents ?? [], financialHandoffs: workspace.state.financialHandoffs ?? [], financialBudgets: workspace.state.financialBudgets ?? [], procurementRequests: workspace.state.procurementRequests ?? [], suppliers: workspace.state.suppliers ?? [], supplierQuotes: workspace.state.supplierQuotes ?? [], supportCases: workspace.state.supportCases ?? [], salesLeads: workspace.state.salesLeads ?? [] } };
   } catch {
     return null;
   }

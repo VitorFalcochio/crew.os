@@ -61,6 +61,12 @@
 .integrationCard h3 { font-size:10px }
 .integrationCard p { overflow:hidden; margin-top:4px; color:var(--muted); font-size:8px; text-overflow:ellipsis; white-space:nowrap }
 .integrationCard small { display:block; margin-top:6px; color:#7fa65f; font-size:7px }
+.integrationActions { display:flex; align-items:center; gap:9px }
+.syncButton { min-height:32px; display:flex; align-items:center; gap:6px; padding:0 10px; border:1px solid var(--border); border-radius:8px; color:var(--text); background:var(--surface-2); font-size:9px; font-weight:700 }
+.syncButton:hover:not(:disabled) { border-color:rgba(239,255,61,.32); color:var(--accent-light) }
+.syncButton:disabled { cursor:wait; opacity:.65 }
+.spinning { animation:integration-spin .8s linear infinite }
+@keyframes integration-spin { to { transform:rotate(360deg) } }
 .planHero { min-height:142px; display:flex; align-items:center; justify-content:space-between; gap:24px; padding:24px; overflow:hidden; border:1px solid rgba(239,255,61,.15); border-radius:12px; background:radial-gradient(circle at 85% 0,rgba(239,255,61,.11),transparent 40%),rgba(0,0,0,.08) }
 .planHero>div:first-child>span { display:flex; align-items:center; gap:6px; color:#91c56b; letter-spacing:.08em; text-transform:uppercase; font-size:7px; font-weight:750 }
 .planHero>div:first-child>span i { width:6px; height:6px; border-radius:50%; background:#86cf54; box-shadow:0 0 8px rgba(134,207,84,.6) }
@@ -123,7 +129,8 @@
 }
 
 @media (max-width:480px) {
-  .integrationCard { grid-template-columns:38px minmax(0,1fr) auto }
+  .integrationCard { grid-template-columns:38px minmax(0,1fr) }
+  .integrationActions { grid-column:1 / -1; justify-content:flex-end }
   .planHero { flex-direction:column }
   .planAmount { justify-items:start }
   .membersCard article { grid-template-columns:28px minmax(0,1fr) auto }

@@ -28,7 +28,7 @@ function initialMessages(employee: Employee): ChatMessage[] {
 
 export function EmployeeChat({ employee }: { employee: Employee }) {
   const demo = useDemo();
-  const { account, tasks, approvals, financialEntries, financialDocuments, procurementRequests, supplierQuotes } = demo;
+  const { account, tasks, approvals, financialAccounts, financialBalances, financialEntries, financialDocuments, procurementRequests, supplierQuotes } = demo;
   const [message, setMessage] = useState("");
   const [attachment, setAttachment] = useState<File | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>(() => initialMessages(employee));
@@ -72,7 +72,7 @@ export function EmployeeChat({ employee }: { employee: Employee }) {
     setMessage("");
     setAttachment(null);
     setReplying(true);
-    const chatState = { tasks, approvals, financialEntries, financialDocuments, procurementRequests, supplierQuotes };
+    const chatState = { tasks, approvals, financialAccounts, financialBalances, financialEntries, financialDocuments, procurementRequests, supplierQuotes };
     let responseText = "";
     try {
       const response = await fetch(`/api/employees/${employee.id}/chat`, {

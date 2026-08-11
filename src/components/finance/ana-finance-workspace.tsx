@@ -154,9 +154,9 @@ export function AnaFinanceWorkspace() {
   const allEntries = useMemo(
     () => [
       ...financialEntries,
-      ...financialAccounts.map((account) => ({
-        id: `receivable-${account.id}`,
-        direction: "receivable" as const,
+      ...financialAccounts.filter((account) => account.status !== "cancelled").map((account) => ({
+        id: `${account.direction ?? "receivable"}-${account.id}`,
+        direction: account.direction ?? "receivable",
         counterparty: account.customerName,
         description: account.document,
         amount: account.amount,
@@ -168,7 +168,7 @@ export function AnaFinanceWorkspace() {
             : account.dueDate < today || account.status === "overdue"
               ? ("overdue" as const)
               : ("open" as const),
-        category: "Receitas operacionais",
+        category: account.direction === "payable" ? "Despesas operacionais" : "Receitas operacionais",
         sourceDocumentIds: [],
         createdAt: account.createdAt,
       })),
