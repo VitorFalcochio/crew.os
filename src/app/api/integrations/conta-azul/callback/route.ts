@@ -30,12 +30,33 @@ export async function GET(request: Request) {
     if (!clientId || !clientSecret) return finish("not_configured");
     const { organizationId, membership } = await requireOrganization();
     if (organizationId !== expectedOrganizationId || !["owner", "admin"].includes(String(membership.role))) return finish("forbidden");
-    const tokens = await exchangeContaAzulAuthorizationCode({ code, clientId, clientSecret, redirectUri: contaAzulRedirectUri() });
-    const company = await fetchContaAzulConnectedCompany(tokens.access_token);
-    await saveContaAzulConnection({ organizationId, tokens, company });
+    let tokens: Awaited<ReturnType<typeof exchangeContaAzulAuthorizationCode>>;
+    try {
+      tokens = await exchangeContaAzulAuthorizationCode({ code, clientId, clientSecret, redirectUri: contaAzulRedirectUri() });
+    } catch (error) {
+      console.error("Conta Azul OAuth token exchange failed", error);
+      return finish("token_exchange_failed");
+    }
+
+    // Company data is useful metadata, but it is not part of the OAuth
+    // contract. A temporary failure in this endpoint must not discard valid
+    // tokens and force the user through authorization again.
+    let company: Awaited<ReturnType<typeof fetchContaAzulConnectedCompany>> = {};
+    try {
+      company = await fetchContaAzulConnectedCompany(tokens.access_token);
+    } catch (error) {
+      console.warn("Conta Azul connected company lookup failed; saving authorization without company metadata", error);
+    }
+
+    try {
+      await saveContaAzulConnection({ organizationId, tokens, company });
+    } catch (error) {
+      console.error("Conta Azul OAuth credential storage failed", error);
+      return finish("storage_failed");
+    }
     return finish("connected");
   } catch (error) {
-    console.error("Conta Azul OAuth callback failed", error instanceof Error ? error.message : "unknown");
+    console.error("Conta Azul OAuth callback failed", error);
     return finish("failed");
   }
 }

@@ -48,7 +48,16 @@ export default function SettingsPage() {
       const contaAzulStatus = params.get("contaAzul");
       if (contaAzulStatus === "connected") toast.success("Conta Azul conectado", { description: "A empresa foi identificada e os tokens foram protegidos no cofre da CrewOS." });
       else if (contaAzulStatus === "denied") toast.warning("Conexão cancelada", { description: "A autorização do Conta Azul não foi concedida." });
-      else if (contaAzulStatus) toast.error("Não foi possível conectar o Conta Azul", { description: contaAzulStatus === "not_configured" ? "Revise as credenciais na Vercel." : contaAzulStatus === "invalid_state" ? "A tentativa expirou. Inicie a conexão novamente." : "Revise a configuração e tente novamente." });
+      else if (contaAzulStatus) {
+        const descriptions: Record<string, string> = {
+          not_configured: "Revise o Client ID e o Client Secret na Vercel.",
+          invalid_state: "A tentativa expirou ou o domínio mudou. Inicie a conexão novamente.",
+          forbidden: "Sua sessão ou permissão mudou. Entre novamente como administrador.",
+          token_exchange_failed: "O Conta Azul recusou a troca do código. Confira as credenciais e a URL de redirecionamento.",
+          storage_failed: "A autorização foi aceita, mas a Crew não conseguiu proteger as credenciais. Confira o cofre e o Supabase na Vercel.",
+        };
+        toast.error("Não foi possível conectar o Conta Azul", { description: descriptions[contaAzulStatus] ?? "Revise a configuração e tente novamente." });
+      }
       if (contaAzulStatus) { params.delete("contaAzul"); const query = params.toString(); window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}`); }
       const stored = localStorage.getItem("crewos-company-settings");
       if (!stored) return;
